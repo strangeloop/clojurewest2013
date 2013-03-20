@@ -1,0 +1,2293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Macros: Why, When, and How</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="Macros: Why, When, and How"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-03-19 15:42:23 PDT"/>
+<meta name="author" content="Gary Fredericks"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="projection.css" media="projection" />
+<link rel="stylesheet" type="text/css" href="presenter.css" media="presenter" />
+
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Macros: Why, When, and How</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Intro</a>
+<ul>
+<li><a href="#sec-1-1">1.1 Macros: Why, When, and How</a></li>
+<li><a href="#sec-1-2">1.2 Why talk about macros?</a></li>
+<li><a href="#sec-1-3">1.3 What we will talk about</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2 Code as Data</a>
+<ul>
+<li><a href="#sec-2-1">2.1 Data</a></li>
+<li><a href="#sec-2-2">2.2 Code has two meanings</a></li>
+<li><a href="#sec-2-3">2.3 Obtaining forms: <code>quote</code></a></li>
+<li><a href="#sec-2-4">2.4 Obtaining forms: <code>read-string</code></a></li>
+<li><a href="#sec-2-5">2.5 Building and Manipulating forms 1</a></li>
+<li><a href="#sec-2-6">2.6 Building and Manipulating forms 2</a></li>
+<li><a href="#sec-2-7">2.7 <code>eval</code>ing forms 1</a></li>
+<li><a href="#sec-2-8">2.8 <code>eval</code>ing forms 2</a></li>
+<li><a href="#sec-2-9">2.9 <code>(eval (eval '''foo))</code></a></li>
+<li><a href="#sec-2-10">2.10 Wat a macro is?</a></li>
+<li><a href="#sec-2-11">2.11 Project Euler #4</a></li>
+<li><a href="#sec-2-12">2.12 Partial solution</a></li>
+<li><a href="#sec-2-13">2.13 <code>clojure.core/for</code></a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 Macro Mechanics</a>
+<ul>
+<li><a href="#sec-3-1">3.1 Functions of Code</a>
+<ul>
+<li><a href="#sec-3-1-1">3.1.1 Defining a pseudo-macro with <code>defn</code></a></li>
+<li><a href="#sec-3-1-2">3.1.2 Using <code>unless</code> (1)</a></li>
+<li><a href="#sec-3-1-3">3.1.3 Using <code>unless</code> (2)</a></li>
+<li><a href="#sec-3-1-4">3.1.4 Using <code>unless</code> (3)</a></li>
+<li><a href="#sec-3-1-5">3.1.5 <code>unless</code> as a proper macro</a></li>
+<li><a href="#sec-3-1-6">3.1.6 Using <code>unless</code> (4)</a></li>
+<li><a href="#sec-3-1-7">3.1.7 Debugging <code>unless</code></a></li>
+</ul>
+</li>
+<li><a href="#sec-3-2">3.2 spy</a>
+<ul>
+<li><a href="#sec-3-2-1">3.2.1 Defining <code>spy</code></a></li>
+<li><a href="#sec-3-2-2">3.2.2 <code>spy</code> as a function (1)</a></li>
+<li><a href="#sec-3-2-3">3.2.3 <code>spy</code> as a function (2)</a></li>
+<li><a href="#sec-3-2-4">3.2.4 <code>spy</code> as a function (3)</a></li>
+<li><a href="#sec-3-2-5">3.2.5 <code>spy</code> as a macro &ndash; desired expansion</a></li>
+<li><a href="#sec-3-2-6">3.2.6 <code>spy</code> as a macro &ndash; first try</a></li>
+<li><a href="#sec-3-2-7">3.2.7 <code>spy</code> as a macro &ndash; second try</a></li>
+<li><a href="#sec-3-2-8">3.2.8 <code>spy</code> as a macro &ndash; third try</a></li>
+<li><a href="#sec-3-2-9">3.2.9 <code>spy</code> &ndash; when <code>'</code> is confusing</a></li>
+<li><a href="#sec-3-2-10">3.2.10 <code>spy</code> as a macro &ndash; fourth try</a></li>
+</ul>
+</li>
+<li><a href="#sec-3-3">3.3 Syntax-quote Preview</a></li>
+<li><a href="#sec-3-4">3.4 What can't you do with macros?</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 Macros??</a>
+<ul>
+<li><a href="#sec-4-1">4.1 Don't Write Macros</a>
+<ul>
+<li><a href="#sec-4-1-1">4.1.1 Macros are not Functions</a></li>
+<li><a href="#sec-4-1-2">4.1.2 Macros beget more macros</a></li>
+<li><a href="#sec-4-1-3">4.1.3 Macros beget more more macros</a></li>
+<li><a href="#sec-4-1-4">4.1.4 Macros can make code hard to understand</a></li>
+<li><a href="#sec-4-1-5">4.1.5 Don't Write Macros (until it hurts)</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-2">4.2 Commonly Tolerated Macro Usages</a>
+<ul>
+<li><a href="#sec-4-2-1">4.2.1 Commonly Tolerated Macro Usages 1</a></li>
+<li><a href="#sec-4-2-2">4.2.2 Commonly Tolerated Macro Usages 2</a></li>
+<li><a href="#sec-4-2-3">4.2.3 Commonly Tolerated Macro Usages 3</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-3">4.3 Abstinence Tips</a></li>
+<li><a href="#sec-4-4">4.4 Tips for Writing Tolerable Macros</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5 Syntax-quote</a>
+<ul>
+<li><a href="#sec-5-1">5.1 Syntax-quote</a></li>
+<li><a href="#sec-5-2">5.2 Unquote: Problem</a></li>
+<li><a href="#sec-5-3">5.3 Unquote: Resolution</a></li>
+<li><a href="#sec-5-4">5.4 Unquote-Splicing: Problem</a></li>
+<li><a href="#sec-5-5">5.5 Unquote-Splicing: First try</a></li>
+<li><a href="#sec-5-6">5.6 Unquote-Splicing: Second try</a></li>
+<li><a href="#sec-5-7">5.7 Unquote-Splicing: Third try</a></li>
+<li><a href="#sec-5-8">5.8 Unquote Debugging</a></li>
+<li><a href="#sec-5-9">5.9 Symbol Qualification: Problem</a></li>
+<li><a href="#sec-5-10">5.10 Symbol Qualification: Resolution</a></li>
+<li><a href="#sec-5-11">5.11 Symbol Qualification: Resolution 2</a></li>
+<li><a href="#sec-5-12">5.12 Gensym: Problem</a></li>
+<li><a href="#sec-5-13">5.13 Gensym: Problem 2</a></li>
+<li><a href="#sec-5-14">5.14 Gensym: Solution</a></li>
+<li><a href="#sec-5-15">5.15 Gensym: Solution 2</a></li>
+<li><a href="#sec-5-16">5.16 Gensym: When to use?</a></li>
+<li><a href="#sec-5-17">5.17 Syntax-quote: Reference</a></li>
+<li><a href="#sec-5-18">5.18 Syntax-quote: All Together Now</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 Macro Fun</a>
+<ul>
+<li><a href="#sec-6-1">6.1 Nested Syntax-quotes</a></li>
+<li><a href="#sec-6-2">6.2 <code>`````foo</code></a></li>
+<li><a href="#sec-6-3">6.3 Recursive <code>-</code></a></li>
+<li><a href="#sec-6-4">6.4 <code>(def defmacro ...)</code></a></li>
+<li><a href="#sec-6-5">6.5 <code>defmacro</code> expansion</a></li>
+<li><a href="#sec-6-6">6.6 Macros that write macros</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7 Outro</a>
+<ul>
+<li><a href="#sec-7-1">7.1 <code>)))))))))))</code></a></li>
+<li><a href="#sec-7-2">7.2 Blatant Omissions</a></li>
+<li><a href="#sec-7-3">7.3 What was that you said</a></li>
+<li><a href="#sec-7-4">7.4 So Thanks</a></li>
+</ul>
+</li>
+<li><a href="#sec-8">8 Export Metastuff</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Intro</h2>
+<div class="outline-text-2" id="text-1">
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Macros: Why, When, and How &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+  <!--
+  <div style="text-align:center;font-size:175%;">Clojure Macros</div>
+  <br />
+  <div style="text-align:center;font-size:100%;">by</div> -->
+  <br />
+  <br />
+  <div style="text-align:center;font-size:130%;">Gary Fredericks</div>
+  <br />
+  <div style="text-align:center;font-size:130%;">(<span style="font-family:monospace;">@gfredericks_</span>)</div>
+  <!--
+  <br />
+  <br />
+  <br />
+  <div style="text-align:center;font-family:monospace;">http://gfredericks.com/2013-02-12</div>
+  -->
+</div>
+
+</div>
+
+<div id="outline-container-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> Why talk about macros? &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-1-2">
+
+<ul>
+<li>Key to my understanding of how Clojure works
+</li>
+<li>The major selling point of Lisp
+<ul>
+<li>Safe metaprogramming!
+</li>
+</ul>
+
+</li>
+<li>Can be intimidating
+<ul>
+<li>Must mentally separate compile-time from runtime
+<ul>
+<li>And read-time! haha! oh dear.
+</li>
+</ul>
+
+</li>
+<li>Syntax-quote looks like a steaming pile of perl
+</li>
+</ul>
+
+</li>
+<li>Appropriate use is a subtle issue
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> What we will talk about &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-1-3">
+
+<ul>
+<li>Preliminary concepts (code is data!)
+</li>
+<li>How Clojure macros work (functions on code!)
+</li>
+<li>When to write macros (sometimes!)
+</li>
+<li>What syntax-quote (<code>`</code>) does (three things!)
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Code as Data &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-2">
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Data &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-1">
+
+<p>   Has just one meaning
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>{<span style="color: #cd00cd;">:name</span> <span style="color: #00cd00;">"Jack Kemp"</span>
+<span class="linenr">2:  </span> <span style="color: #cd00cd;">:birthdate</span> [1935 7 13]
+<span class="linenr">3:  </span> <span style="color: #cd00cd;">:favorite-things</span> #{<span style="color: #cd00cd;">:marmelade</span> <span style="color: #cd00cd;">:marmite</span>
+<span class="linenr">4:  </span>                    <span style="color: #cd00cd;">:marmots</span>   <span style="color: #cd00cd;">:marmosets</span>}}
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Code has two meanings &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-2">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">secure-password?</span>
+<span class="linenr">2:  </span>  <span style="color: #00cd00;">"Checks if the password</span>
+<span class="linenr">3:  </span><span style="color: #00cd00;">   is totes uncrackable."</span>
+<span class="linenr">4:  </span>  [pw]
+<span class="linenr">5:  </span>  (<span style="color: #00cdcd; font-weight: bold;">and</span> (<span style="color: #0000ee; font-weight: bold;">&gt;</span> (<span style="color: #0000ee; font-weight: bold;">count</span> pw) 6)
+<span class="linenr">6:  </span>       (<span style="color: #0000ee; font-weight: bold;">.contains</span> pw <span style="color: #00cd00;">"$"</span>)
+<span class="linenr">7:  </span>       (<span style="color: #0000ee; font-weight: bold;">.contains</span> pw <span style="color: #00cd00;">"1"</span>)))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Obtaining forms: <code>quote</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)         <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; 42</span>
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>(quote (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (* 2 3 7)</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>'(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)        <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (* 2 3 7)</span>
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span>'(<span style="color: #0000ee; font-weight: bold;">This</span> is a list with (<span style="color: #0000ee; font-weight: bold;">+</span> 5 2) elements)
+<span class="linenr">8:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; '(This is a list with (+ 5 2) elements)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-4" class="outline-3">
+<h3 id="sec-2-4"><span class="section-number-3">2.4</span> Obtaining forms: <code>read-string</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-4">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #0000ee; font-weight: bold;">read-string</span> <span style="color: #00cd00;">"(* 2 3 7)"</span>)
+<span class="linenr"> 2:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (* 2 3 7)</span>
+<span class="linenr"> 3:  </span>
+<span class="linenr"> 4:  </span>(<span style="color: #0000ee; font-weight: bold;">read-string</span> <span style="color: #00cd00;">"foo"</span>)
+<span class="linenr"> 5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; foo</span>
+<span class="linenr"> 6:  </span>
+<span class="linenr"> 7:  </span>(<span style="color: #0000ee; font-weight: bold;">type</span> (<span style="color: #0000ee; font-weight: bold;">read-string</span> <span style="color: #00cd00;">"foo"</span>))
+<span class="linenr"> 8:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; clojure.lang.Symbol</span>
+<span class="linenr"> 9:  </span>
+<span class="linenr">10:  </span>(<span style="color: #0000ee; font-weight: bold;">read-string</span> <span style="color: #00cd00;">"'foo"</span>)
+<span class="linenr">11:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (quote foo)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-5" class="outline-3">
+<h3 id="sec-2-5"><span class="section-number-3">2.5</span> Building and Manipulating forms 1 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-5">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">reverse</span> '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr">2:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (7 3 2 *)</span>
+<span class="linenr">3:  </span>
+<span class="linenr">4:  </span>(<span style="color: #0000ee; font-weight: bold;">take</span> 2 '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (* 2)</span>
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [num (<span style="color: #0000ee; font-weight: bold;">+</span> 3 2)]
+<span class="linenr">8:  </span>  '(<span style="color: #0000ee; font-weight: bold;">This</span> list has num elements))
+<span class="linenr">9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (This list has num elements)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-6" class="outline-3">
+<h3 id="sec-2-6"><span class="section-number-3">2.6</span> Building and Manipulating forms 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-6">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [num (<span style="color: #0000ee; font-weight: bold;">+</span> 3 2)]
+<span class="linenr">2:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> '<span style="color: #0000ee; font-weight: bold;">This</span> 'list 'has num 'elements))
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (This list has 5 elements)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-7" class="outline-3">
+<h3 id="sec-2-7"><span class="section-number-3">2.7</span> <code>eval</code>ing forms 1 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-7">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; 42</span>
+<span class="linenr"> 2:  </span>
+<span class="linenr"> 3:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> (<span style="color: #0000ee; font-weight: bold;">reverse</span> '(5 37 +)))
+<span class="linenr"> 4:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; 42</span>
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span>(<span style="color: #00cdcd; font-weight: bold;">def</span> <span style="color: #0000ee; font-weight: bold;">does-not-compile</span> '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 x))
+<span class="linenr"> 7:  </span>
+<span class="linenr"> 8:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> does-not-compile)
+<span class="linenr"> 9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">CompilerException java.lang.RuntimeException:</span>
+<span class="linenr">10:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Unable to resolve symbol: x in this context</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-8" class="outline-3">
+<h3 id="sec-2-8"><span class="section-number-3">2.8</span> <code>eval</code>ing forms 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-8">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">list</span> 'let '[x 7] does-not-compile)
+<span class="linenr">2:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (let [x 7] (* 2 3 x))</span>
+<span class="linenr">3:  </span>
+<span class="linenr">4:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> (<span style="color: #0000ee; font-weight: bold;">list</span> 'let '[x 7] does-not-compile))
+<span class="linenr">5:  </span><span style="color: #cd0000;">;;</span><span style="color: #cd0000;">=&gt; 42</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-9" class="outline-3">
+<h3 id="sec-2-9"><span class="section-number-3">2.9</span> <code>(eval (eval '''foo))</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-9">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>''foo <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (quote foo)</span>
+<span class="linenr"> 2:  </span>
+<span class="linenr"> 3:  </span>''''foo
+<span class="linenr"> 4:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (quote (quote (quote foo)))</span>
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> ''foo) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; foo</span>
+<span class="linenr"> 7:  </span>
+<span class="linenr"> 8:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> (<span style="color: #0000ee; font-weight: bold;">eval</span> '''foo)) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; foo</span>
+<span class="linenr"> 9:  </span>
+<span class="linenr">10:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> (<span style="color: #0000ee; font-weight: bold;">list</span> 'quote 'foo)) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; foo</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-10" class="outline-3">
+<h3 id="sec-2-10"><span class="section-number-3">2.10</span> Wat a macro is? &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="centertable">centertable</span></span></h3>
+<div class="outline-text-3" id="text-2-10">
+
+<p>   A macro is a function the compiler calls with forms as
+   arguments, and expects a form to be returned.
+</p>
+<p>
+   Macro calls are replaced <span style="text-decoration:underline;">at compile time</span> with whatever the macro
+   returns.
+</p>
+<p>
+   Implication: macros are virtually <span style="text-decoration:underline;">never</span> necessary to make your
+   code do something.
+</p><table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption></caption>
+<colgroup><col class="left" /><col class="left" />
+</colgroup>
+<thead>
+<tr><th scope="col" class="left">Macro call</th><th scope="col" class="left">Expanded code</th></tr>
+</thead>
+<tbody>
+<tr><td class="left"><code>(if-not b v1 v2)</code></td><td class="left"><code>(if (not b) v1 v2)</code></td></tr>
+<tr><td class="left"><code>(when b s1 s2)</code></td><td class="left"><code>(if b (do s1 s2) nil)</code></td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-11" class="outline-3">
+<h3 id="sec-2-11"><span class="section-number-3">2.11</span> Project Euler #4 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-11">
+
+<p>   A palindromic number reads the same both ways.
+</p>
+<p>
+   The largest palindrome made from the product of two 2-digit numbers
+   is <code>9009 = 91 * 99</code>
+</p>
+<p>
+   Find the largest palindrome made from the product of two 3-digit
+   numbers.
+</p></div>
+
+</div>
+
+<div id="outline-container-2-12" class="outline-3">
+<h3 id="sec-2-12"><span class="section-number-3">2.12</span> Partial solution &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="bigcode">bigcode</span></span></h3>
+<div class="outline-text-3" id="text-2-12">
+
+
+
+
+<pre class="src src-clojure">(<span style="color: #00cdcd; font-weight: bold;">for</span> [x (<span style="color: #0000ee; font-weight: bold;">range</span> 100 1000),
+      y (<span style="color: #0000ee; font-weight: bold;">range</span> 100 x),
+      <span style="color: #cd00cd;">:let</span> [z (<span style="color: #0000ee; font-weight: bold;">*</span> x y)]
+      <span style="color: #cd00cd;">:when</span> (palindrome? z)]
+  z)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-2-13" class="outline-3">
+<h3 id="sec-2-13"><span class="section-number-3">2.13</span> <code>clojure.core/for</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="tinycode">tinycode</span>&nbsp;<span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-2-13">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [iter__4609__auto__
+<span class="linenr"> 2:  </span>      (<span style="color: #00cdcd; font-weight: bold;">fn</span> iter__1163
+<span class="linenr"> 3:  </span>        [s__1164]
+<span class="linenr"> 4:  </span>        (<span style="color: #0000ee; font-weight: bold;">lazy-seq</span>
+<span class="linenr"> 5:  </span>         (<span style="color: #00cdcd; font-weight: bold;">loop</span> [s__1164 s__1164]
+<span class="linenr"> 6:  </span>           (<span style="color: #00cdcd; font-weight: bold;">when-first</span> [x s__1164]
+<span class="linenr"> 7:  </span>             (<span style="color: #00cdcd; font-weight: bold;">let</span> [iterys__4605__auto__
+<span class="linenr"> 8:  </span>                   (<span style="color: #00cdcd; font-weight: bold;">fn</span> iter__1165
+<span class="linenr"> 9:  </span>                     [s__1166]
+<span class="linenr">10:  </span>                     (<span style="color: #0000ee; font-weight: bold;">lazy-seq</span>
+<span class="linenr">11:  </span>                      (<span style="color: #00cdcd; font-weight: bold;">loop</span> [s__1166 s__1166]
+<span class="linenr">12:  </span>                        (<span style="color: #00cdcd; font-weight: bold;">when-let</span> [s__1166 (<span style="color: #0000ee; font-weight: bold;">seq</span> s__1166)]
+<span class="linenr">13:  </span>                          (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">chunked-seq?</span> s__1166)
+<span class="linenr">14:  </span>                            (<span style="color: #00cdcd; font-weight: bold;">let</span> [c__4607__auto__
+<span class="linenr">15:  </span>                                  (<span style="color: #0000ee; font-weight: bold;">chunk-first</span> s__1166)
+<span class="linenr">16:  </span>                                  size__4608__auto__
+<span class="linenr">17:  </span>                                  (<span style="color: #0000ee; font-weight: bold;">int</span> (<span style="color: #0000ee; font-weight: bold;">count</span> c__4607__auto__))
+<span class="linenr">18:  </span>                                  b__1168
+<span class="linenr">19:  </span>                                  (<span style="color: #0000ee; font-weight: bold;">chunk-buffer</span> size__4608__auto__)]
+<span class="linenr">20:  </span>                              (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #00cdcd; font-weight: bold;">loop</span> [i__1167 (<span style="color: #0000ee; font-weight: bold;">int</span> 0)]
+<span class="linenr">21:  </span>                                    (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">&lt;</span> i__1167 size__4608__auto__)
+<span class="linenr">22:  </span>                                      (<span style="color: #00cdcd; font-weight: bold;">let</span> [y (<span style="color: #0000ee; font-weight: bold;">.nth</span> c__4607__auto__ i__1167)]
+<span class="linenr">23:  </span>                                        (<span style="color: #00cdcd; font-weight: bold;">let</span> [z (<span style="color: #0000ee; font-weight: bold;">*</span> x y)]
+<span class="linenr">24:  </span>                                          (<span style="color: #00cdcd; font-weight: bold;">if</span> (palindrome? z)
+<span class="linenr">25:  </span>                                            (<span style="color: #00cdcd; font-weight: bold;">do</span>
+<span class="linenr">26:  </span>                                              (<span style="color: #0000ee; font-weight: bold;">chunk-append</span> b__1168 z)
+<span class="linenr">27:  </span>                                              (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">unchecked-inc</span> i__1167)))
+<span class="linenr">28:  </span>                                            (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">unchecked-inc</span> i__1167)))))
+<span class="linenr">29:  </span>                                      true))
+<span class="linenr">30:  </span>                                (<span style="color: #0000ee; font-weight: bold;">chunk-cons</span>
+<span class="linenr">31:  </span>                                 (<span style="color: #0000ee; font-weight: bold;">chunk</span> b__1168)
+<span class="linenr">32:  </span>                                 (iter__1165 (<span style="color: #0000ee; font-weight: bold;">chunk-rest</span> s__1166)))
+<span class="linenr">33:  </span>                                (<span style="color: #0000ee; font-weight: bold;">chunk-cons</span>
+<span class="linenr">34:  </span>                                 (<span style="color: #0000ee; font-weight: bold;">chunk</span> b__1168)
+<span class="linenr">35:  </span>                                 nil)))
+<span class="linenr">36:  </span>                            (<span style="color: #00cdcd; font-weight: bold;">let</span> [y (<span style="color: #0000ee; font-weight: bold;">first</span> s__1166)]
+<span class="linenr">37:  </span>                              (<span style="color: #00cdcd; font-weight: bold;">let</span> [z (<span style="color: #0000ee; font-weight: bold;">*</span> x y)]
+<span class="linenr">38:  </span>                                (<span style="color: #00cdcd; font-weight: bold;">if</span> (palindrome? z)
+<span class="linenr">39:  </span>                                  (<span style="color: #0000ee; font-weight: bold;">cons</span> z (iter__1165 (<span style="color: #0000ee; font-weight: bold;">rest</span> s__1166)))
+<span class="linenr">40:  </span>                                  (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">rest</span> s__1166))))))))))
+<span class="linenr">41:  </span>                   fs__4606__auto__
+<span class="linenr">42:  </span>                   (<span style="color: #0000ee; font-weight: bold;">seq</span> (iterys__4605__auto__ (<span style="color: #0000ee; font-weight: bold;">range</span> 100 x)))]
+<span class="linenr">43:  </span>               (<span style="color: #00cdcd; font-weight: bold;">if</span> fs__4606__auto__
+<span class="linenr">44:  </span>                 (<span style="color: #0000ee; font-weight: bold;">concat</span>
+<span class="linenr">45:  </span>                  fs__4606__auto__
+<span class="linenr">46:  </span>                  (iter__1163 (<span style="color: #0000ee; font-weight: bold;">rest</span> s__1164)))
+<span class="linenr">47:  </span>                 (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">rest</span> s__1164))))))))]
+<span class="linenr">48:  </span>  (iter__4609__auto__ (<span style="color: #0000ee; font-weight: bold;">range</span> 100 1000)))
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Macro Mechanics &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Functions of Code</h3>
+<div class="outline-text-3" id="text-3-1">
+
+
+</div>
+
+<div id="outline-container-3-1-1" class="outline-4">
+<h4 id="sec-3-1-1"><span class="section-number-4">3.1.1</span> Defining a pseudo-macro with <code>defn</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-1">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">unless</span>
+<span class="linenr">2:  </span>  <span style="color: #00cd00;">"Takes three expressions and</span>
+<span class="linenr">3:  </span><span style="color: #00cd00;">   returns a new expression."</span>
+<span class="linenr">4:  </span>  [condition false-case true-case]
+<span class="linenr">5:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'if
+<span class="linenr">6:  </span>        condition
+<span class="linenr">7:  </span>        true-case
+<span class="linenr">8:  </span>        false-case))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-2" class="outline-4">
+<h4 id="sec-3-1-2"><span class="section-number-4">3.1.2</span> Using <code>unless</code> (1) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-2">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(unless (<span style="color: #0000ee; font-weight: bold;">=</span> 1 2)
+<span class="linenr">2:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Not equal"</span>)
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Equal"</span>))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr">6:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">Not Equal</span>
+<span class="linenr">7:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">Equal</span>
+<span class="linenr">8:  </span><span style="color: #cd0000;">;;</span>
+<span class="linenr">9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns: (if false nil nil)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-3" class="outline-4">
+<h4 id="sec-3-1-3"><span class="section-number-4">3.1.3</span> Using <code>unless</code> (2) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(unless '(<span style="color: #0000ee; font-weight: bold;">=</span> 1 2)
+<span class="linenr">2:  </span>  '(<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Not equal"</span>)
+<span class="linenr">3:  </span>  '(<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Equal"</span>))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns: (if (= 1 2) (println "Equal") (println "Not equal"))</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-4" class="outline-4">
+<h4 id="sec-3-1-4"><span class="section-number-4">3.1.4</span> Using <code>unless</code> (3) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-4">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">eval</span> (unless '(<span style="color: #0000ee; font-weight: bold;">=</span> 1 2)
+<span class="linenr">2:  </span>        '(<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Not equal"</span>)
+<span class="linenr">3:  </span>        '(<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Equal"</span>)))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr">6:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">Not Equal</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-5" class="outline-4">
+<h4 id="sec-3-1-5"><span class="section-number-4">3.1.5</span> <code>unless</code> as a proper macro &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-5">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">unless</span>
+<span class="linenr">2:  </span>  [condition false-case true-case]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'if
+<span class="linenr">4:  </span>        condition
+<span class="linenr">5:  </span>        true-case
+<span class="linenr">6:  </span>        false-case))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">unless</span>
+<span class="linenr">2:  </span>  [condition false-case true-case]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'if
+<span class="linenr">4:  </span>        condition
+<span class="linenr">5:  </span>        true-case
+<span class="linenr">6:  </span>        false-case))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-6" class="outline-4">
+<h4 id="sec-3-1-6"><span class="section-number-4">3.1.6</span> Using <code>unless</code> (4) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-6">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(unless (<span style="color: #0000ee; font-weight: bold;">=</span> 1 2)
+<span class="linenr">2:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Not equal"</span>)
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Equal"</span>))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr">6:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">Not Equal</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-1-7" class="outline-4">
+<h4 id="sec-3-1-7"><span class="section-number-4">3.1.7</span> Debugging <code>unless</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-1-7">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(unless (<span style="color: #0000ee; font-weight: bold;">=</span> 1 2)
+<span class="linenr">2:  </span>                  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Not equal"</span>)
+<span class="linenr">3:  </span>                  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Equal"</span>)))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (if (= 1 2) (println "Not equal") (println "Equal"))</span>
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> spy</h3>
+<div class="outline-text-3" id="text-3-2">
+
+
+</div>
+
+<div id="outline-container-3-2-1" class="outline-4">
+<h4 id="sec-3-2-1"><span class="section-number-4">3.2.1</span> Defining <code>spy</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-1">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Goal:</span>
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">should print:</span>
+<span class="linenr">6:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">(* 2 3 7) is 42</span>
+<span class="linenr">7:  </span><span style="color: #cd0000;">;;</span>
+<span class="linenr">8:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">and return</span>
+<span class="linenr">9:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">42</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-2" class="outline-4">
+<h4 id="sec-3-2-2"><span class="section-number-4">3.2.2</span> <code>spy</code> as a function (1) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-2">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr"> 2:  </span>  [expr]
+<span class="linenr"> 3:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> expr <span style="color: #00cd00;">"is"</span> expr)
+<span class="linenr"> 4:  </span>  expr)
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span>(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr"> 7:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr"> 8:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">42 is 42</span>
+<span class="linenr"> 9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">And returns:</span>
+<span class="linenr">10:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">42</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-3" class="outline-4">
+<h4 id="sec-3-2-3"><span class="section-number-4">3.2.3</span> <code>spy</code> as a function (2) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr"> 2:  </span>  [expr]
+<span class="linenr"> 3:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> 'expr <span style="color: #00cd00;">"is"</span> expr)
+<span class="linenr"> 4:  </span>  expr)
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span>(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr"> 7:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr"> 8:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">expr is 42</span>
+<span class="linenr"> 9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">And returns:</span>
+<span class="linenr">10:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">42</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-4" class="outline-4">
+<h4 id="sec-3-2-4"><span class="section-number-4">3.2.4</span> <code>spy</code> as a function (3) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-4">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr"> 2:  </span>  [expr value]
+<span class="linenr"> 3:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> expr <span style="color: #00cd00;">"is"</span> value)
+<span class="linenr"> 4:  </span>  value)
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span>(spy '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7) (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr"> 7:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Prints:</span>
+<span class="linenr"> 8:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">(* 2 3 7) is 42</span>
+<span class="linenr"> 9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">And returns:</span>
+<span class="linenr">10:  </span><span style="color: #cd0000;">;;   </span><span style="color: #cd0000;">42</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-5" class="outline-4">
+<h4 id="sec-3-2-5"><span class="section-number-4">3.2.5</span> <code>spy</code> as a macro &ndash; desired expansion &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-5">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">should expand to</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">6:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">7:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-6" class="outline-4">
+<h4 id="sec-3-2-6"><span class="section-number-4">3.2.6</span> <code>spy</code> as a macro &ndash; first try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-6">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println 'expr <span style="color: #00cd00;">"is"</span> 'val)
+<span class="linenr">6:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns:</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">6:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> expr <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">7:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-7" class="outline-4">
+<h4 id="sec-3-2-7"><span class="section-number-4">3.2.7</span> <code>spy</code> as a macro &ndash; second try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-7">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println expr <span style="color: #00cd00;">"is"</span> 'val)
+<span class="linenr">6:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns:</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">6:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">7:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-8" class="outline-4">
+<h4 id="sec-3-2-8"><span class="section-number-4">3.2.8</span> <code>spy</code> as a macro &ndash; third try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-8">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println ''expr <span style="color: #00cd00;">"is"</span> 'val)
+<span class="linenr">6:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns:</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">6:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> (quote expr) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">7:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-9" class="outline-4">
+<h4 id="sec-3-2-9"><span class="section-number-4">3.2.9</span> <code>spy</code> &ndash; when <code>'</code> is confusing &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-9">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">2:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> '(<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">3:  </span>  val)
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">2:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> (quote (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">3:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2-10" class="outline-4">
+<h4 id="sec-3-2-10"><span class="section-number-4">3.2.10</span> <code>spy</code> as a macro &ndash; fourth try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h4>
+<div class="outline-text-4" id="text-3-2-10">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println
+<span class="linenr">6:  </span>              (<span style="color: #0000ee; font-weight: bold;">list</span> 'quote expr)
+<span class="linenr">7:  </span>              <span style="color: #00cd00;">"is"</span>
+<span class="linenr">8:  </span>              'val)
+<span class="linenr">9:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Returns:</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">6:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> (quote (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)) <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">7:  </span>  val)
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Syntax-quote Preview &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="twocodes">twocodes</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-3-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println
+<span class="linenr">6:  </span>              (<span style="color: #0000ee; font-weight: bold;">list</span> 'quote expr)
+<span class="linenr">7:  </span>              <span style="color: #00cd00;">"is"</span>
+<span class="linenr">8:  </span>              'val)
+<span class="linenr">9:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val# ~expr]
+<span class="linenr">4:  </span>     (<span style="color: #0000ee; font-weight: bold;">println</span> '~expr <span style="color: #00cd00;">"is"</span> val#)
+<span class="linenr">5:  </span>     val#))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> What can't you do with macros? &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-4">
+
+<ul>
+<li>Customize or extend reader syntax
+<ul>
+<li>New data structure syntax
+</li>
+<li>I want <code>@</code> to mean something else in this expression
+</li>
+</ul>
+
+</li>
+<li>Change the behavior of code you don't control
+<ul>
+<li>I want all the clojure.core functions to log their execution times
+</li>
+</ul>
+
+</li>
+<li>Magically change things outside the scope of a macro-call
+</li>
+<li>Change macro-precedence
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Macros?? &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-4">
+
+<ul>
+<li>Why not to write macros
+</li>
+<li>Commonly tolerated macro usages
+</li>
+<li>Tips for avoiding  macros
+</li>
+<li>Tips for writing tolerable macros
+</li>
+</ul>
+
+
+</div>
+
+<div id="outline-container-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Don't Write Macros &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-4-1">
+
+
+  <div style="width:60%;margin: auto;">
+    <blockquote>"The first rule of Macro Club is Don’t Write Macros."
+      <br /><br />
+      -- Stuart Halloway
+    </blockquote>
+  </div>
+
+</div>
+
+<div id="outline-container-4-1-1" class="outline-4">
+<h4 id="sec-4-1-1"><span class="section-number-4">4.1.1</span> Macros are not Functions &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-1-1">
+
+<p>Macros cannot be composed at runtime.
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">reduce</span> or [false true false])
+<span class="linenr">2:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; CompilerException java.lang.RuntimeException:</span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;;    </span><span style="color: #cd0000;">Can't take value of a macro: #'clojure.core/or</span>
+</pre>
+
+
+<p>
+but you can&hellip;
+</p>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">reduce</span> #(<span style="color: #00cdcd; font-weight: bold;">or</span> %1 %2) [false true false])
+<span class="linenr">2:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; true</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-1-2" class="outline-4">
+<h4 id="sec-4-1-2"><span class="section-number-4">4.1.2</span> Macros beget more macros &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-1-2">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">macro-reduce</span>
+<span class="linenr">2:  </span>  [macro-name coll]
+<span class="linenr">3:  </span>  `(<span style="color: #0000ee; font-weight: bold;">reduce</span> #(~macro-name %1 %2) ~coll))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(macro-reduce or  [false true false])  <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; true</span>
+<span class="linenr">6:  </span>(macro-reduce or  [false false false]) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; false</span>
+<span class="linenr">7:  </span>(macro-reduce and [false true false])  <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; false</span>
+<span class="linenr">8:  </span>(macro-reduce do  [false true false])  <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; false</span>
+<span class="linenr">9:  </span>(macro-reduce do  [false true false])  <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; false</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-1-3" class="outline-4">
+<h4 id="sec-4-1-3"><span class="section-number-4">4.1.3</span> Macros beget more more macros &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-1-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">In clojure.test</span>
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>(<span style="color: #00cd00;">is</span> (<span style="color: #0000ee; font-weight: bold;">=</span> 42 (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">But I want:</span>
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span>(is= 42 (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-1-4" class="outline-4">
+<h4 id="sec-4-1-4"><span class="section-number-4">4.1.4</span> Macros can make code hard to understand &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-1-4">
+
+<p>    The reader has to understand the behavior of each macro
+    individually to know what a piece of code is doing at the
+    syntactic level.
+</p></div>
+
+</div>
+
+<div id="outline-container-4-1-5" class="outline-4">
+<h4 id="sec-4-1-5"><span class="section-number-4">4.1.5</span> Don't Write Macros (until it hurts) &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-1-5">
+
+<ul>
+<li>Macros are not functions
+</li>
+<li>Macros tend to result in more macros
+</li>
+<li>Macros require special-case understanding
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Commonly Tolerated Macro Usages</h3>
+<div class="outline-text-3" id="text-4-2">
+
+
+</div>
+
+<div id="outline-container-4-2-1" class="outline-4">
+<h4 id="sec-4-2-1"><span class="section-number-4">4.2.1</span> Commonly Tolerated Macro Usages 1 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-2-1">
+
+<ul>
+<li>Wrapping execution: <code>with-foo</code>
+<ul>
+<li><code>with-redefs</code>, <code>with-open</code>, <code>with-out-str</code>, <code>time</code>, <code>dosync</code>
+</li>
+</ul>
+
+</li>
+<li>Delaying execution
+<ul>
+<li><code>delay</code>, <code>future</code>, <code>lazy-seq</code>
+</li>
+</ul>
+
+</li>
+<li>Defing things
+<ul>
+<li><code>defn</code>, <code>defmacro</code>, <code>defmulti</code>, <code>defprotocol</code>, <code>defrecord</code>, <code>deftype</code>
+</li>
+<li><code>deftest</code> (clojure.test), <code>defproject</code> (leiningen)
+</li>
+</ul>
+
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-2-2" class="outline-4">
+<h4 id="sec-4-2-2"><span class="section-number-4">4.2.2</span> Commonly Tolerated Macro Usages 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-2-2">
+
+<ul>
+<li>Capturing Code
+<ul>
+<li><code>assert</code>, <code>spy</code>, <code>is</code> (clojure.test)
+</li>
+</ul>
+
+</li>
+<li>DSLs (Korma, Compojure, midge)
+</li>
+<li>Compile-time Optimizations
+<ul>
+<li>Hiccup
+<ul>
+<li><code>(html [:ul [:li foo] [:li {:id "7"} "WAT"]])</code>
+</li>
+</ul>
+
+</li>
+<li>String interpolation (clojure.core.strint)
+<ul>
+<li><code>(&lt;&lt; "You have $~(double (/ x 100)) left.")</code>
+</li>
+</ul>
+
+</li>
+<li><code>comment</code>
+</li>
+<li><code>assert</code>
+</li>
+</ul>
+
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-2-3" class="outline-4">
+<h4 id="sec-4-2-3"><span class="section-number-4">4.2.3</span> Commonly Tolerated Macro Usages 3 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h4>
+<div class="outline-text-4" id="text-4-2-3">
+
+<ul>
+<li>Implementing entirely different paradigms
+<ul>
+<li>Logic Programming (core.logic)
+</li>
+<li>Concatenative Programming (factjor)
+</li>
+</ul>
+
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Abstinence Tips &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-4-3">
+
+<ul>
+<li>Learn and prefer functional patterns
+<ul>
+<li>Function decorators instead of wrapper macros (e.g. ring,
+       clojure.test fixtures)
+</li>
+</ul>
+
+</li>
+<li>Learn about the macros clojure already has
+<ul>
+<li>1.5 introduced <code>cond-&gt;</code>, <code>some-&gt;</code>, and <code>as-&gt;</code>
+</li>
+</ul>
+
+</li>
+<li>Tolerate a bit of repetition for the sake of clarity
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Tips for Writing Tolerable Macros &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-4-4">
+
+<ul>
+<li>Use helper functions!
+<ul>
+<li>Many macros can be written in one or two lines by deferring to
+       a helper function for most of the work
+</li>
+</ul>
+
+</li>
+<li>Use naming conventions
+<ul>
+<li>Adverbs for execution-wrapping
+</li>
+<li><code>def-foo</code> if you def something
+<ul>
+<li>Though consider <code>(def foo (macro-call))</code> instead
+</li>
+</ul>
+
+</li>
+</ul>
+
+</li>
+<li>Don't def more than one thing
+</li>
+<li>Only introduce locals named by the user
+<ul>
+<li><code>(dotimes [n 10] (foo n))</code>, <code>(run* [q] ...)</code>
+</li>
+</ul>
+
+</li>
+<li>No side effects
+</li>
+</ul>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Syntax-quote &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-5">
+
+
+</div>
+
+<div id="outline-container-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Syntax-quote &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-1">
+
+<p>  <code>`</code> is an enhanced <code>'</code>
+</p>
+<p>
+  <code>`</code> is independent of macros, but not really useful for
+  anything else.
+</p>
+<p>
+  <strike>Complects</strike> Combines three different functionalities:
+</p><ul>
+<li>Unquote
+</li>
+<li>Symbol qualification
+</li>
+<li>Gensym
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Unquote: Problem &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-2">
+
+<p>    This is difficult to read. The shape of the final code gets
+    lost in the calls to <code>list</code>.
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println (<span style="color: #0000ee; font-weight: bold;">list</span> 'quote expr) <span style="color: #00cd00;">"is"</span> 'val)
+<span class="linenr">6:  </span>        'val))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-3" class="outline-3">
+<h3 id="sec-5-3"><span class="section-number-3">5.3</span> Unquote: Resolution &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-3">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">list</span> 'let
+<span class="linenr">4:  </span>        ['val expr]
+<span class="linenr">5:  </span>        (<span style="color: #0000ee; font-weight: bold;">list</span> 'println
+<span class="linenr">6:  </span>              (<span style="color: #0000ee; font-weight: bold;">list</span> 'quote expr)
+<span class="linenr">7:  </span>              <span style="color: #00cd00;">"is"</span> 'val)
+<span class="linenr">8:  </span>        'val))
+</pre>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+<span class="linenr">2:  </span>  [expr]
+<span class="linenr">3:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val ~expr]
+<span class="linenr">4:  </span>     (<span style="color: #0000ee; font-weight: bold;">println</span> '~expr <span style="color: #00cd00;">"is"</span> val)
+<span class="linenr">5:  </span>     val))
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">line 4 is equivalent to</span>
+<span class="linenr">8:  </span><span style="color: #cd0000;">;;</span>
+<span class="linenr">9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">(println (quote ~expr) "is" val)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-4" class="outline-3">
+<h3 id="sec-5-4"><span class="section-number-3">5.4</span> Unquote-Splicing: Problem &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-4">
+
+<p>    Often we have a list of expressions that we want to insert somewhere
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">We want</span>
+<span class="linenr"> 2:  </span>(returning (<span style="color: #0000ee; font-weight: bold;">slurp</span> <span style="color: #00cd00;">"data.csv"</span>)
+<span class="linenr"> 3:  </span>  (<span style="color: #0000ee; font-weight: bold;">reset!</span> running false)
+<span class="linenr"> 4:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Done reading file"</span>))
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">to expand to</span>
+<span class="linenr"> 7:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">slurp</span> <span style="color: #00cd00;">"data.csv"</span>)]
+<span class="linenr"> 8:  </span>  (<span style="color: #0000ee; font-weight: bold;">reset!</span> running false)
+<span class="linenr"> 9:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Done reading file"</span>)
+<span class="linenr">10:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-5" class="outline-3">
+<h3 id="sec-5-5"><span class="section-number-3">5.5</span> Unquote-Splicing: First try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-5">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr">2:  </span>  [expr &amp; side-effects]
+<span class="linenr">3:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val ~expr]
+<span class="linenr">4:  </span>     ~side-effects
+<span class="linenr">5:  </span>     val))
+</pre>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span>
+<span class="linenr">2:  </span> '(returning x (foo) (bar)))
+<span class="linenr">3:  </span>
+<span class="linenr">4:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">returns:</span>
+<span class="linenr">5:  </span>
+<span class="linenr">6:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val x]
+<span class="linenr">7:  </span>  ((foo)
+<span class="linenr">8:  </span>   (bar))
+<span class="linenr">9:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-6" class="outline-3">
+<h3 id="sec-5-6"><span class="section-number-3">5.6</span> Unquote-Splicing: Second try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-6">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr">2:  </span>  [expr &amp; side-effects]
+<span class="linenr">3:  </span>  (<span style="color: #0000ee; font-weight: bold;">concat</span> ['let ['val expr]]
+<span class="linenr">4:  </span>          side-effects
+<span class="linenr">5:  </span>          ['val]))
+</pre>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span>
+<span class="linenr">2:  </span> '(returning x (foo) (bar)))
+<span class="linenr">3:  </span>
+<span class="linenr">4:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">returns:</span>
+<span class="linenr">5:  </span>
+<span class="linenr">6:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val x]
+<span class="linenr">7:  </span>  (foo)
+<span class="linenr">8:  </span>  (bar)
+<span class="linenr">9:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-7" class="outline-3">
+<h3 id="sec-5-7"><span class="section-number-3">5.7</span> Unquote-Splicing: Third try &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-7">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr">2:  </span>  [expr &amp; side-effects]
+<span class="linenr">3:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val ~expr]
+<span class="linenr">4:  </span>     ~@side-effects
+<span class="linenr">5:  </span>     val))
+</pre>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span>
+<span class="linenr">2:  </span> '(returning x (foo) (bar)))
+<span class="linenr">3:  </span>
+<span class="linenr">4:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">returns:</span>
+<span class="linenr">5:  </span>
+<span class="linenr">6:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [val x]
+<span class="linenr">7:  </span>  (foo)
+<span class="linenr">8:  </span>  (bar)
+<span class="linenr">9:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-8" class="outline-3">
+<h3 id="sec-5-8"><span class="section-number-3">5.8</span> Unquote Debugging &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-8">
+
+<p>    Syntax-quote can be used outside the context of macros
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>`(1 2 3 (<span style="color: #0000ee; font-weight: bold;">+</span> 4 5) 6 ~(<span style="color: #0000ee; font-weight: bold;">+</span> 7 8))
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (1 2 3 (+ 4 5) 6 15)</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>(<span style="color: #00cdcd; font-weight: bold;">let</span> [nums [5 6 7 8]]
+<span class="linenr">6:  </span>  `(1 2 ~@nums ~nums))
+<span class="linenr">7:  </span>
+<span class="linenr">8:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (1 2 5 6 7 8 [5 6 7 8])</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-9" class="outline-3">
+<h3 id="sec-5-9"><span class="section-number-3">5.9</span> Symbol Qualification: Problem &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-9">
+
+<p>    Using a macro defined in another namespace:
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">ns</span> my.macros)
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr">4:  </span>  [expr &amp; side-effects]
+<span class="linenr">5:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val ~expr]
+<span class="linenr">6:  </span>     ~@side-effects
+<span class="linenr">7:  </span>     val))
+</pre>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">ns</span> my.code
+<span class="linenr">2:  </span>  (<span style="color: #cd00cd;">:refer-clojure</span> <span style="color: #cd00cd;">:exclude</span> [let])
+<span class="linenr">3:  </span>  (<span style="color: #cd00cd;">:require</span> [my.macros <span style="color: #cd00cd;">:refer</span> [returning]]
+<span class="linenr">4:  </span>            [other.lib <span style="color: #cd00cd;">:refer</span> [let]]))
+<span class="linenr">5:  </span>
+<span class="linenr">6:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">main</span>
+<span class="linenr">7:  </span>  []
+<span class="linenr">8:  </span>  (returning (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)
+<span class="linenr">9:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Computed special number"</span>)))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-10" class="outline-3">
+<h3 id="sec-5-10"><span class="section-number-3">5.10</span> Symbol Qualification: Resolution &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-10">
+
+<p>    Syntax-quote automatically fully-qualifies symbols based on the current environment.
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>`first   <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; clojure.core/first</span>
+<span class="linenr">2:  </span>`foo     <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; user/foo</span>
+<span class="linenr">3:  </span>`if      <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; if</span>
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span>`(<span style="color: #0000ee; font-weight: bold;">+</span> 1 2) <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (clojure.core/+ 1 2)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-11" class="outline-3">
+<h3 id="sec-5-11"><span class="section-number-3">5.11</span> Symbol Qualification: Resolution 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-11">
+
+<p>    Using a macro defined in another namespace:
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">ns</span> my.macros)
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr">4:  </span>  [expr &amp; side-effects]
+<span class="linenr">5:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val ~expr]
+<span class="linenr">6:  </span>     ~@side-effects
+<span class="linenr">7:  </span>     val))
+</pre>
+
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span>
+<span class="linenr">2:  </span> '(returning (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)
+<span class="linenr">3:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Computed special number"</span>)))
+<span class="linenr">4:  </span>
+<span class="linenr">5:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">returns (sort of):</span>
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span>(clojure.core/<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+<span class="linenr">8:  </span>  (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Computed special number"</span>)
+<span class="linenr">9:  </span>  val)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-12" class="outline-3">
+<h3 id="sec-5-12"><span class="section-number-3">5.12</span> Gensym: Problem &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-12">
+
+<p>    Macros that create locals might accidentally shadow things
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">do-math</span>
+<span class="linenr">2:  </span>  [val]
+<span class="linenr">3:  </span>  (returning (<span style="color: #0000ee; font-weight: bold;">*</span> 7 val)
+<span class="linenr">4:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Just multiplied 7 with"</span> val)))
+<span class="linenr">5:  </span>
+<span class="linenr">6:  </span>(do-math 2)
+<span class="linenr">7:  </span>
+<span class="linenr">8:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">prints:</span>
+<span class="linenr">9:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Just multiplied 7 with 14</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-13" class="outline-3">
+<h3 id="sec-5-13"><span class="section-number-3">5.13</span> Gensym: Problem 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-13">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">do-math</span>
+<span class="linenr"> 2:  </span>  [val]
+<span class="linenr"> 3:  </span>  (returning (<span style="color: #0000ee; font-weight: bold;">*</span> 7 val)
+<span class="linenr"> 4:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Just multiplied 7 with"</span> val)))
+<span class="linenr"> 5:  </span>
+<span class="linenr"> 6:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Effectively expands to:</span>
+<span class="linenr"> 7:  </span>
+<span class="linenr"> 8:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">do-math</span>
+<span class="linenr"> 9:  </span>  [val]
+<span class="linenr">10:  </span>  (<span style="color: #00cdcd; font-weight: bold;">let</span> [val (<span style="color: #0000ee; font-weight: bold;">*</span> 7 val)]
+<span class="linenr">11:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Just multiplied 7 with"</span> val)
+<span class="linenr">12:  </span>    val))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-14" class="outline-3">
+<h3 id="sec-5-14"><span class="section-number-3">5.14</span> Gensym: Solution &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-14">
+
+<p>    Any symbols that end in <code>#</code> are expanded to gensyms
+</p>
+
+
+<pre class="src src-clojure"><span class="linenr">1:  </span>`foo# <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; foo__1179__auto__</span>
+<span class="linenr">2:  </span>
+<span class="linenr">3:  </span>`[foo# bar# foo#] <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; [foo__1184__auto__</span>
+<span class="linenr">4:  </span>                  <span style="color: #cd0000;">;;     </span><span style="color: #cd0000;">bar__1185__auto__</span>
+<span class="linenr">5:  </span>                  <span style="color: #cd0000;">;;     </span><span style="color: #cd0000;">foo__1184__auto__]</span>
+<span class="linenr">6:  </span>
+<span class="linenr">7:  </span>[`foo# `foo#] <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; [foo__1188__auto__</span>
+<span class="linenr">8:  </span>              <span style="color: #cd0000;">;;     </span><span style="color: #cd0000;">foo__1189__auto__]</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-15" class="outline-3">
+<h3 id="sec-5-15"><span class="section-number-3">5.15</span> Gensym: Solution 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-15">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">returning</span>
+<span class="linenr"> 2:  </span>  [expr &amp; side-effects]
+<span class="linenr"> 3:  </span>  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val# ~expr]
+<span class="linenr"> 4:  </span>     ~@side-effects
+<span class="linenr"> 5:  </span>     val#))
+<span class="linenr"> 6:  </span>
+<span class="linenr"> 7:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">Effectively expands to:</span>
+<span class="linenr"> 8:  </span>(<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">do-math</span>
+<span class="linenr"> 9:  </span>  [val]
+<span class="linenr">10:  </span>  (<span style="color: #00cdcd; font-weight: bold;">let</span> [val__1168__auto__ (<span style="color: #0000ee; font-weight: bold;">*</span> 7 val)]
+<span class="linenr">11:  </span>    (<span style="color: #0000ee; font-weight: bold;">println</span> <span style="color: #00cd00;">"Just multiplied 7 with"</span> val)
+<span class="linenr">12:  </span>    val__1168__auto__))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-16" class="outline-3">
+<h3 id="sec-5-16"><span class="section-number-3">5.16</span> Gensym: When to use? &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-16">
+
+<p>   Whenever you create a local in your macro definition.
+</p><ul>
+<li><code>let</code>, <code>loop</code>
+</li>
+<li>Arguments to a function
+</li>
+<li>Any other macro that expands to one of the above
+</li>
+</ul>
+
+
+<p>
+   It's difficult to miss, because if you forget to use it you will
+   end up with a fully-qualified symbol that will likely not compile.
+</p></div>
+
+</div>
+
+<div id="outline-container-5-17" class="outline-3">
+<h3 id="sec-5-17"><span class="section-number-3">5.17</span> Syntax-quote: Reference &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-5-17">
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+<caption></caption>
+<colgroup><col class="left" /><col class="left" />
+</colgroup>
+<thead>
+<tr><th scope="col" class="left">Syntax</th><th scope="col" class="left">What it does</th></tr>
+</thead>
+<tbody>
+<tr><td class="left"><code>~foo</code></td><td class="left">insert <code>foo</code> unquoted</td></tr>
+<tr><td class="left"><code>~@foo</code></td><td class="left">insert <code>foo</code> unquoted and splice its elements in</td></tr>
+<tr><td class="left"><code>foo</code></td><td class="left">fully-qualified symbol based on what <code>foo</code> refers to in the local context</td></tr>
+<tr><td class="left"><code>foo#</code></td><td class="left">gensym, same as other uses of <code>foo#</code> in the same syntax-quote expression</td></tr>
+</tbody>
+</table>
+
+</div>
+
+</div>
+
+<div id="outline-container-5-18" class="outline-3">
+<h3 id="sec-5-18"><span class="section-number-3">5.18</span> Syntax-quote: All Together Now &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span>&nbsp;<span class="wide">wide</span></span></h3>
+<div class="outline-text-3" id="text-5-18">
+
+
+
+
+<pre class="src src-clojure">(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">spy</span>
+  <span style="color: #00cd00;">"Prints a debug statement with the</span>
+<span style="color: #00cd00;">   given form and its value, and</span>
+<span style="color: #00cd00;">   returns the value."</span>
+  [expr]
+  `(<span style="color: #00cdcd; font-weight: bold;">let</span> [val# ~expr]
+     (<span style="color: #0000ee; font-weight: bold;">println</span> '~expr <span style="color: #00cd00;">"is"</span> val#)
+     val#))
+</pre>
+
+
+<pre class="src src-clojure">(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(spy (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)))
+
+<span style="color: #cd0000;">;; </span><span style="color: #cd0000;">actually actually returns:</span>
+
+(clojure.core/<span style="color: #00cdcd; font-weight: bold;">let</span>
+    [val__1133__auto__ (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7)]
+  (clojure.core/<span style="color: #0000ee; font-weight: bold;">println</span>
+   (quote (<span style="color: #0000ee; font-weight: bold;">*</span> 2 3 7))
+   <span style="color: #00cd00;">"is"</span>
+   val__1133__auto__)
+  val__1133__auto__)
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Macro Fun &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-6">
+
+
+</div>
+
+<div id="outline-container-6-1" class="outline-3">
+<h3 id="sec-6-1"><span class="section-number-3">6.1</span> Nested Syntax-quotes &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-6-1">
+
+
+
+
+<pre class="src src-clojure">``foo <span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (quote user/foo)</span>
+
+```foo
+<span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (clojure.core/seq</span>
+<span style="color: #cd0000;">;;     </span><span style="color: #cd0000;">(clojure.core/concat (clojure.core/list (quote quote))</span>
+<span style="color: #cd0000;">;;                          </span><span style="color: #cd0000;">(clojure.core/list (quote user/foo))))</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-6-2" class="outline-3">
+<h3 id="sec-6-2"><span class="section-number-3">6.2</span> <code>`````foo</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="slide5996">slide5996</span></span></h3>
+<div class="outline-text-3" id="text-6-2">
+
+<p>(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote clojure.core/seq))))))))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote clojure.core/concat))))))))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote clojure.core/list))))))))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote quote)))))))) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/list)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote quote))
+(clojure.core/list (quote quote))))))))))))))))))))))))))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote clojure.core/list))))))))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/seq)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote clojure.core/concat))
+(clojure.core/list (clojure.core/seq (clojure.core/concat
+(clojure.core/list (quote clojure.core/list)) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+quote)) (clojure.core/list (quote quote)))))))) (clojure.core/list
+(clojure.core/seq (clojure.core/concat (clojure.core/list (quote
+clojure.core/list)) (clojure.core/list (clojure.core/seq
+(clojure.core/concat (clojure.core/list (quote quote))
+(clojure.core/list (quote
+user/foo))))))))))))))))))))))))))))))))))))))))
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-6-3" class="outline-3">
+<h3 id="sec-6-3"><span class="section-number-3">6.3</span> Recursive <code>-&gt;&gt;</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-6-3">
+
+
+
+
+<pre class="src src-clojure">(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(<span style="color: #00cdcd; font-weight: bold;">-&gt;&gt;</span> a b (<span style="color: #00cdcd; font-weight: bold;">-&gt;&gt;</span> c d)))
+
+<span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (-&gt;&gt; (-&gt;&gt; a b) (-&gt;&gt; c d))</span>
+
+(<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span>
+ (<span style="color: #0000ee; font-weight: bold;">macroexpand-1</span> '(<span style="color: #00cdcd; font-weight: bold;">-&gt;&gt;</span> a b (<span style="color: #00cdcd; font-weight: bold;">-&gt;&gt;</span> c d))))
+
+<span style="color: #cd0000;">;; </span><span style="color: #cd0000;">=&gt; (-&gt;&gt; c d (-&gt;&gt; a b))</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-6-4" class="outline-3">
+<h3 id="sec-6-4"><span class="section-number-3">6.4</span> <code>(def defmacro ...)</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="tinycode">tinycode</span>&nbsp;<span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-6-4">
+
+
+
+
+<pre class="src src-clojure">(<span style="color: #00cdcd; font-weight: bold;">def</span>
+
+ ^{<span style="color: #cd00cd;">:doc</span> <span style="color: #00cd00;">"Like defn, but the resulting function name is declared as a</span>
+<span style="color: #00cd00;">  macro and will be used as a macro by the compiler when it is</span>
+<span style="color: #00cd00;">  called."</span>
+   <span style="color: #cd00cd;">:arglists</span> '([name doc-string? attr-map? [params*] body]
+                 [name doc-string? attr-map? ([params*] body)+ attr-map?])
+   <span style="color: #cd00cd;">:added</span> <span style="color: #00cd00;">"1.0"</span>}
+ <span style="color: #0000ee; font-weight: bold;">defmacro</span> (<span style="color: #00cdcd; font-weight: bold;">fn</span> [&amp;form &amp;env
+                name &amp; args]
+             (<span style="color: #00cdcd; font-weight: bold;">let</span> [prefix (<span style="color: #00cdcd; font-weight: bold;">loop</span> [p (<span style="color: #0000ee; font-weight: bold;">list</span> name) args args]
+                            (<span style="color: #00cdcd; font-weight: bold;">let</span> [f (<span style="color: #0000ee; font-weight: bold;">first</span> args)]
+                              (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">string?</span> f)
+                                (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">cons</span> f p) (<span style="color: #0000ee; font-weight: bold;">next</span> args))
+                                (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">map?</span> f)
+                                  (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">cons</span> f p) (<span style="color: #0000ee; font-weight: bold;">next</span> args))
+                                  p))))
+                   fdecl (<span style="color: #00cdcd; font-weight: bold;">loop</span> [fd args]
+                           (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">string?</span> (<span style="color: #0000ee; font-weight: bold;">first</span> fd))
+                             (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">next</span> fd))
+                             (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">map?</span> (<span style="color: #0000ee; font-weight: bold;">first</span> fd))
+                               (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">next</span> fd))
+                               fd)))
+                   fdecl (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">vector?</span> (<span style="color: #0000ee; font-weight: bold;">first</span> fdecl))
+                           (<span style="color: #0000ee; font-weight: bold;">list</span> fdecl)
+                           fdecl)
+                   add-implicit-args (<span style="color: #00cdcd; font-weight: bold;">fn</span> [fd]
+                             (<span style="color: #00cdcd; font-weight: bold;">let</span> [args (<span style="color: #0000ee; font-weight: bold;">first</span> fd)]
+                               (<span style="color: #0000ee; font-weight: bold;">cons</span> (<span style="color: #0000ee; font-weight: bold;">vec</span> (<span style="color: #0000ee; font-weight: bold;">cons</span> '&amp;form (<span style="color: #0000ee; font-weight: bold;">cons</span> '&amp;env args))) (<span style="color: #0000ee; font-weight: bold;">next</span> fd))))
+                   add-args (<span style="color: #00cdcd; font-weight: bold;">fn</span> [acc ds]
+                              (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">nil?</span> ds)
+                                acc
+                                (<span style="color: #00cdcd; font-weight: bold;">let</span> [d (<span style="color: #0000ee; font-weight: bold;">first</span> ds)]
+                                  (<span style="color: #00cdcd; font-weight: bold;">if</span> (<span style="color: #0000ee; font-weight: bold;">map?</span> d)
+                                    (<span style="color: #0000ee; font-weight: bold;">conj</span> acc d)
+                                    (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">conj</span> acc (add-implicit-args d)) (<span style="color: #0000ee; font-weight: bold;">next</span> ds))))))
+                   fdecl (<span style="color: #0000ee; font-weight: bold;">seq</span> (add-args [] fdecl))
+                   decl (<span style="color: #00cdcd; font-weight: bold;">loop</span> [p prefix d fdecl]
+                          (<span style="color: #00cdcd; font-weight: bold;">if</span> p
+                            (<span style="color: #00cdcd; font-weight: bold;">recur</span> (<span style="color: #0000ee; font-weight: bold;">next</span> p) (<span style="color: #0000ee; font-weight: bold;">cons</span> (<span style="color: #0000ee; font-weight: bold;">first</span> p) d))
+                            d))]
+               (<span style="color: #0000ee; font-weight: bold;">list</span> 'do
+                     (<span style="color: #0000ee; font-weight: bold;">cons</span> `defn decl)
+                     (<span style="color: #0000ee; font-weight: bold;">list</span> '. (<span style="color: #0000ee; font-weight: bold;">list</span> 'var name) '(<span style="color: #0000ee; font-weight: bold;">setMacro</span>))
+                     (<span style="color: #0000ee; font-weight: bold;">list</span> 'var name)))))
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-6-5" class="outline-3">
+<h3 id="sec-6-5"><span class="section-number-3">6.5</span> <code>defmacro</code> expansion &nbsp;&nbsp;&nbsp;<span class="tag"><span class="twocodes">twocodes</span>&nbsp;<span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-6-5">
+
+
+
+
+<pre class="src src-clojure">(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">dyslexially</span>
+  [expr]
+  (<span style="color: #0000ee; font-weight: bold;">reverse</span> expr))
+</pre>
+
+
+
+<pre class="src src-clojure">(<span style="color: #00cdcd; font-weight: bold;">do</span>
+  (clojure.core/<span style="color: #00cdcd; font-weight: bold;">defn</span> <span style="color: #0000ee; font-weight: bold;">dyslexially</span>
+    ([&amp;form &amp;env expr]
+       (<span style="color: #0000ee; font-weight: bold;">reverse</span> expr)))
+ (<span style="color: #00cdcd; font-weight: bold;">.</span> #'dyslexially (<span style="color: #0000ee; font-weight: bold;">setMacro</span>))
+ #'dyslexially)
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-6-6" class="outline-3">
+<h3 id="sec-6-6"><span class="section-number-3">6.6</span> Macros that write macros &nbsp;&nbsp;&nbsp;<span class="tag"><span class="tinycode">tinycode</span>&nbsp;<span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-6-6">
+
+
+
+
+<pre class="src src-clojure"><span class="linenr"> 1:  </span><span style="color: #cd0000;">;; </span><span style="color: #cd0000;">from core.logic</span>
+<span class="linenr"> 2:  </span>
+<span class="linenr"> 3:  </span>(<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">RelHelper</span> [arity]
+<span class="linenr"> 4:  </span>  (<span style="color: #00cdcd; font-weight: bold;">let</span> [r (<span style="color: #0000ee; font-weight: bold;">range</span> 1 (<span style="color: #0000ee; font-weight: bold;">+</span> arity 2))
+<span class="linenr"> 5:  </span>        fs (<span style="color: #0000ee; font-weight: bold;">map</span> f-sym r)
+<span class="linenr"> 6:  </span>        mfs (<span style="color: #0000ee; font-weight: bold;">map</span> #(<span style="color: #0000ee; font-weight: bold;">with-meta</span> % {<span style="color: #cd00cd;">:volatile-mutable</span> true <span style="color: #cd00cd;">:tag</span> <span style="color: #0000ee; font-weight: bold;">clojure.lang.IFn</span>})
+<span class="linenr"> 7:  </span>                 fs)
+<span class="linenr"> 8:  </span>        create-sig (<span style="color: #00cdcd; font-weight: bold;">fn</span> [n]
+<span class="linenr"> 9:  </span>                     (<span style="color: #00cdcd; font-weight: bold;">let</span> [args (<span style="color: #0000ee; font-weight: bold;">map</span> a-sym (<span style="color: #0000ee; font-weight: bold;">range</span> 1 (clojure.core/<span style="color: #0000ee; font-weight: bold;">inc</span> n)))]
+<span class="linenr">10:  </span>                       `(invoke [~'_ ~@args]
+<span class="linenr">11:  </span>                                  (~(f-sym n) ~@args))))
+<span class="linenr">12:  </span>        set-case (<span style="color: #00cdcd; font-weight: bold;">fn</span> [[f arity]]
+<span class="linenr">13:  </span>                   `(~arity (set! ~f ~'f)))]
+<span class="linenr">14:  </span>    `(<span style="color: #00cdcd; font-weight: bold;">do</span>
+<span class="linenr">15:  </span>       (<span style="color: #00cdcd; font-weight: bold;">deftype</span> <span style="color: #0000ee; font-weight: bold;">~</span>'<span style="color: #0000ee; font-weight: bold;">Rel</span> [~'name ~'indexes ~'meta
+<span class="linenr">16:  </span>                       ~@mfs]
+<span class="linenr">17:  </span>         <span style="color: #0000ee; font-weight: bold;">clojure.lang.IObj</span>
+<span class="linenr">18:  </span>         (~'<span style="color: #0000ee; font-weight: bold;">withMeta</span> [~'_ ~'meta]
+<span class="linenr">19:  </span>           (~'<span style="color: #0000ee; font-weight: bold;">Rel.</span> ~'name ~'indexes ~'meta ~@fs))
+<span class="linenr">20:  </span>         (~'meta [~'_]
+<span class="linenr">21:  </span>           ~'meta)
+<span class="linenr">22:  </span>         <span style="color: #0000ee; font-weight: bold;">clojure.lang.IFn</span>
+<span class="linenr">23:  </span>         ~@(<span style="color: #0000ee; font-weight: bold;">map</span> create-sig r)
+<span class="linenr">24:  </span>         (~'<span style="color: #0000ee; font-weight: bold;">applyTo</span> [~'this ~'arglist]
+<span class="linenr">25:  </span>            (~'apply-to-helper ~'this ~'arglist))
+<span class="linenr">26:  </span>         ~'<span style="color: #0000ee; font-weight: bold;">IRel</span>
+<span class="linenr">27:  </span>         (~'setfn [~'_ ~'arity ~'f]
+<span class="linenr">28:  </span>           (<span style="color: #00cdcd; font-weight: bold;">case</span> ~'arity
+<span class="linenr">29:  </span>                 ~@(<span style="color: #0000ee; font-weight: bold;">mapcat</span> set-case (<span style="color: #0000ee; font-weight: bold;">map</span> vector fs r))))
+<span class="linenr">30:  </span>         (~'indexes-for [~'_ ~'arity]
+<span class="linenr">31:  </span>           ((<span style="color: #0000ee; font-weight: bold;">deref</span> ~'indexes) ~'arity))
+<span class="linenr">32:  </span>         (~'add-indexes [~'_ ~'arity ~'index]
+<span class="linenr">33:  </span>           (<span style="color: #0000ee; font-weight: bold;">swap!</span> ~'indexes assoc ~'arity ~'index)))
+<span class="linenr">34:  </span>       (<span style="color: #00cdcd; font-weight: bold;">defmacro</span> <span style="color: #0000ee; font-weight: bold;">~</span>'defrel
+<span class="linenr">35:  </span>         <span style="color: #00cd00;">"Define a relation for adding facts. Takes a name and some fields.</span>
+<span class="linenr">36:  </span><span style="color: #00cd00;">         Use fact/facts to add facts and invoke the relation to query it."</span>
+<span class="linenr">37:  </span>         [~'name ~'&amp; ~'rest]
+<span class="linenr">38:  </span>         (defrel-helper ~'name ~arity ~'rest)))))
+</pre>
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7"><span class="section-number-2">7</span> Outro</h2>
+<div class="outline-text-2" id="text-7">
+
+
+</div>
+
+<div id="outline-container-7-1" class="outline-3">
+<h3 id="sec-7-1"><span class="section-number-3">7.1</span> <code>)))))))))))</code> &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-7-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-7-2" class="outline-3">
+<h3 id="sec-7-2"><span class="section-number-3">7.2</span> Blatant Omissions &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-7-2">
+
+<ul>
+<li>Magical arguments: <code>&amp;form</code> and <code>&amp;env</code>
+</li>
+<li>clojure.tools.macro
+<ul>
+<li>local macros (without deffing anything)
+</li>
+<li>symbol macros
+</li>
+</ul>
+
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-7-3" class="outline-3">
+<h3 id="sec-7-3"><span class="section-number-3">7.3</span> What was that you said &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-7-3">
+
+<ul>
+<li>By taking advantage of homoiconicity, macros give you a
+     relatively easy way to reduce syntactic repetition and ceremony,
+     effectively adding new features to the language
+</li>
+<li>They require a decent understanding of how compilation works
+</li>
+<li>They make your code awkward and hard to reason about if used
+     unnecessarily
+</li>
+<li>Syntax-quote makes it easier to write safe macros
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-7-4" class="outline-3">
+<h3 id="sec-7-4"><span class="section-number-3">7.4</span> So Thanks &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span>&nbsp;<span class="closingslide">closingslide</span></span></h3>
+<div class="outline-text-3" id="text-7-4">
+
+<p>   Also thanks to
+</p><ul>
+<li>Andrew Brehaut (<code>@brehaut</code>)
+</li>
+<li>Daniel Glauser (<code>@danielglauser</code>)
+</li>
+<li>Lucas Willett (<code>@ltw_</code>).
+</li>
+</ul>
+
+
+<p>
+   <hr />
+</p>
+<p>
+   <img src="groupon.png" style="width:300px;" />
+</p>
+<p>
+   Groupon is hiring for Clojure
+</p></div>
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8"><span class="section-number-2">8</span> Export Metastuff</h2>
+<div class="outline-text-2" id="text-8">
+
+
+
+
+
+<script type="text/javascript" src="jquery-1.7.1.js"></script>
+<script type="text/javascript">
+// Why does the postamble end up in my slides?
+$(function($){$("#postamble").remove()});
+
+$.noConflict();
+// This grossly haxy
+(function(){
+  var $ = jQuery;
+  $('pre span[style="color: #cdcd00;"]').each(function(i,el){
+    $(el).css("color","blue");
+  });
+})();
+</script>
+<div id="footer">
+  <span class="name">Gary Fredericks</span>
+  <span class="talk">Macros: Why, When, and How</span>
+</div>
+<script type="text/javascript" src="org-html-slideshow.js"></script>
+<script type="text/javascript">
+  org_html_slideshow.main.add_new_slide_callback(function(){
+    var footer = document.getElementById("footer");
+    document.body.appendChild(footer);
+  });
+
+  org_html_slideshow.main.toggle_mode();
+</script>
+<style>
+@font-face {
+    font-family: "Inconsolata";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Inconsolata"), url("http://themes.googleusercontent.com/static/fonts/inconsolata/v3/BjAYBlHtW3CJxDcjzrnZCIbN6UDyHWBl620a-IRfuBk.woff") format("woff");
+}
+
+pre, code {
+  font-family: Inconsolata;
+}
+
+.slide.tinycode pre {
+  font-size:40%;
+}
+
+.slide.bigcode pre {
+  font-size: 150%;
+}
+
+code {
+  background-color: #005572;
+  color: white;
+  padding-right: 0.2em;
+  padding-left: 0.2em;
+}
+
+/* Aw whatever */
+
+.slide.twocodes .left {
+  float: left;
+  width: 50%;
+}
+
+.slide.twocodes .right {
+  float: left;
+  width: 50%;
+}
+
+.slide.twocodes .break {
+  clear: left;
+}
+
+.slide.centertable table {
+  margin: 0 auto;
+}
+
+.slide.slide5996 .outline-text {
+  font-family: Inconsolata;
+  font-size: 50%;
+  width:100%;
+}
+
+.slide.closingslide .outline-text {
+  margin-top: 3em;
+}
+
+.slide.closingslide p.image {
+  text-align: left;
+}
+</style>
+
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2013-03-19 15:42:23 PDT</p>
+<p class="author">Author: Gary Fredericks</p>
+<p class="creator">Org version 7.8.11 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

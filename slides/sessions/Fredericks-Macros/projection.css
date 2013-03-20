@@ -1,0 +1,78 @@
+/* Org-HTML-Slideshow projection styles.
+ *
+ * These styles will apply only to the slide-show view.
+ */
+
+body {
+   margin: 0pt;
+   font-size: 24pt;
+}
+
+/* Use all headings as slide titles, regardless of level. */
+h1,h2,h3,h4,h5,h6,h7,h8 {
+   font-size: 48pt;
+   margin: 18pt;
+   text-align: center;
+}
+
+li {
+   margin: 12pt;
+}
+
+/* Center embedded images. */
+p.image {
+   text-align: center;
+}
+
+/* Hide Org-Mode tags in slide-show view. */
+span.tag {
+   display: none;
+}
+
+/* Hide Org-Mode section numbers in slide-show view. */
+span.section-number-1,span.section-number-2,span.section-number-3,span.section-number-4,span.section-number-5,span.section-number-6,span.section-number-7,span.section-number-8 {
+   display: none;
+}
+
+.blue_background {
+   background: blue;
+   color: white;
+}
+
+
+#footer {
+  float: left;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #005572; /* #02779E; */
+  color: #fff;
+  line-height: 2em;
+  font-size: 0.8em;
+  text-align: right;
+}
+
+#footer .name {
+  float: left;
+}
+
+#footer .name, #footer .talk {
+  padding: 0 18pt;
+}
+
+#current-slide {
+  margin: 18pt;
+}
+
+table {
+  margin: 0 auto;
+}
+
+.slide .outline-text {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.slide.wide .outline-text {
+  width: 98%;
+}
