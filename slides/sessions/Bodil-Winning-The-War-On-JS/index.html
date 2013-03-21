@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8"/>
+
+    <title>Winning the War on Javascript</title>
+
+    <meta name="description" content="Winning the War on Javascript"/>
+    <meta name="author" content="Bodil Stokke"/>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <link rel="stylesheet" href="css/reveal.min.css"/>
+    <link rel="stylesheet" href="css/theme/never-been-so-much-fun.css" id="theme"/>
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/tomorrow-night-eighties.css"/>
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+      document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+    </script>
+
+  </head>
+
+  <body>
+
+    <div class="reveal">
+
+      <div class="slides">
+
+        <section class="title-slide">
+          <h3>Winning the War</h3>
+          <img src="m/title.png"/>
+          <h2>on Javascript</h2>
+          <p>@bodil</p>
+        </section>
+
+        <section>
+          <img src="m/all-the-way-down.jpg"/>
+          <aside class="notes">
+            I did a talk at Clojure/conj
+          </aside>
+        </section>
+
+        <section>
+          <h3>In which we learned</h3>
+          <ol>
+            <li class="fragment">Idiomatic JS isn't idiomatic Cljs</li>
+            <li class="fragment">So using a Node web framework → ugly code</li>
+          </ol>
+        </section>
+
+        <section>
+          <img src="m/spring.png" class="plain"/>
+          <aside class="notes">
+            Of course, it could have been a lot worse...
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/catnip.jpg"/>
+          <div class="pic-label bigger">
+            CATNIP
+          </div>
+          <aside class="notes">
+            We learned the dark secret of Catnip
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/actual-catnip.png"/>
+        </section>
+
+        <section>
+          <img src="m/madness.png" class="plain"/>
+          <aside class="notes">
+            It's written in CoffeeScript
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/facepalm.jpg"/>
+          <aside class="notes">
+            Which is a bit embarrassing
+          </aside>
+        </section>
+
+        <section>
+          <h3>Why not Cljs?</h3>
+          <ol>
+            <li class="fragment">Immature platform</li>
+            <li class="fragment">Subclassing interop hell expected</li>
+          </ol>
+          <aside class="notes">
+            Were there any good reasons to avoid Clojurescript?
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/japanese-toilet.jpg"/>
+          <aside class="notes">
+            But that toilet isn't going to clean itself.
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/oleg.png"/>
+          <div class="pic-label quote">
+            What would Oleg do?
+          </div>
+          <aside class="notes">
+            So I asked myself, "What would Oleg do?"
+          </aside>
+        </section>
+
+        <section>
+          <h3>Task #1</h3>
+          <h2>Javascript Class System</h2>
+        </section>
+
+        <section>
+          <ol>
+            <li class="fragment">Prototypal inheritance</li>
+            <li class="fragment">Support mixins</li>
+            <li class="fragment">Backwards compatible</li>
+          </ol>
+          <aside class="notes">
+            Must support inheritance, mixins and produce objects and prototypes
+            that can be passed back to JS and work as expected.
+          </aside>
+        </section>
+
+        <section>
+          <img src="m/additional-pylons.png"/>
+        </section>
+
+        <section>
+          <img src="m/uncle-joe.jpg"/>
+          <aside class="notes">
+            Don't use OOP if you can help it.
+            Turns out it wasn't really necessary except for edge cases.
+          </aside>
+        </section>
+
+        <section>
+          <h3>Task #2</h3>
+          <h2>Node + Cljs = Web</h2>
+        </section>
+
+        <section>
+          <img src="m/put-a-ring-on-it.jpg"/>
+        </section>
+
+        <section>
+          <h3>Ring</h3>
+          <ol>
+            <li class="fragment">Handler is called with request</li>
+            <li class="fragment">Handler returns response</li>
+            <li class="fragment">Profit!</li>
+          </ol>
+        </section>
+
+        <section>
+          <pre><code class="clojure">
+            {:status 200
+             :headers {:content-type "text/plain"}
+             :body "This is Dog Fort"}
+          </code></pre>
+        </section>
+
+        <section>
+          <h3>Ring Middleware</h3>
+          <ol>
+            <li class="fragment">Middleware wraps handler</li>
+            <li class="fragment">Middlewares are composable</li>
+            <li class="fragment">Profit!</li>
+          </ol>
+        </section>
+
+        <section>
+          <h3>Async Ring</h3>
+          <ol class="fragment">
+            <li>Just provide a callback!</li>
+            <li>???</li>
+            <li>Profit!</li>
+          </ol>
+        </section>
+
+        <section>
+          <img src="m/callback-hell.jpg"/>
+        </section>
+
+        <section>
+          <img src="m/this-is-dog-fort.png"/>
+        </section>
+
+        <section>
+          <h3>Dog Fort</h3>
+          <ol>
+            <li class="fragment">Clojure already comes with concurrency primitives</li>
+            <li class="fragment">Return not response but promise of response</li>
+            <li class="fragment">Oh wait...</li>
+          </ol>
+        </section>
+
+        <section>
+          <h3>Task #3</h3>
+          <h2>Promise Me It Gets Better</h2>
+        </section>
+
+        <section>
+          <img src="m/red-lobster-standing-by.png"/>
+        </section>
+
+        <section>
+          <img src="m/dogfort.jpg"/>
+        </section>
+
+        <section>
+          <h3>Red Lobster</h3>
+          <ol>
+            <li class="fragment">Provides an event emitter system</li>
+            <li class="fragment">Wraps Node streams and I/O</li>
+            <li class="fragment">Implements those missing promises</li>
+            <li class="fragment">What could work in the browser should work in the browser</li>
+          </ol>
+        </section>
+
+        <section>
+          <img src="m/red-lobster-tense.png"/>
+          <aside class="notes">
+            Code examples go here.
+          </aside>
+        </section>
+
+        <section>
+          <h3>Task #4</h3>
+          <img src="m/uncle-bob.png"/>
+          <h2>Write Some Tests Maybe</h2>
+        </section>
+
+        <section>
+          <h3>Testing on Cljs</h3>
+          <ol>
+            <li class="fragment">(assert)</li>
+            <li class="fragment">cljs-test</li>
+            <li class="fragment">clojurescript.test</li>
+            <li class="fragment">All synchronous</li>
+          </ol>
+        </section>
+
+        <section>
+          <img src="m/error.png"/>
+        </section>
+
+        <section>
+          <h3>Summary</h3>
+          <ol>
+            <li class="fragment">JS compatible class system</li>
+            <li class="fragment">Ring on Node</li>
+            <li class="fragment">Events and promises</li>
+            <li class="fragment">Asynchronous unit testing</li>
+          </ol>
+        </section>
+
+        <section>
+          <h3>REPL Options</h3>
+          <ol>
+            <li class="fragment">cljs-noderepl</li>
+            <li class="fragment">cljs-nashorn</li>
+          </ol>
+        </section>
+
+        <section>
+          <img src="m/nicolas-cage.jpg"/>
+        </section>
+
+        <section>
+          <h3>Thank you</h3>
+          <img src="m/dash.gif"/>
+          <p class="centre"><a href="https://github.com/bodil">github.com/bodil</a></p>
+        </section>
+
+      </div>
+
+    </div>
+
+    <script src="lib/js/head.min.js"></script>
+    <script src="js/reveal.js"></script>
+
+    <script type="text/javascript">
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: false,
+        progress: false,
+        history: true,
+        center: true,
+        mouseWheel: true,
+        rollingLinks: false,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'zoom', // default/cube/page/concave/zoom/linear/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'lib/js/underscore.js', async: true, condition: function() { return true; } },
+          { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+          { src: 'plugin/prettify/prettify.js', async: true, callback: function() {
+            var i, els = document.querySelectorAll("code"), l = els.length, el;
+            for (i = 0; i < l; i++) {
+              el = els[i];
+              if (el.className !== "no-highlight")
+                el.innerHTML = prettyPrintOne(el.innerHTML, el.className);
+            }
+          } },
+          { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'plugin/catnip/catnip.js', async: true, condition: function() { return window.parent !== window; } },
+          // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+      });
+
+    </script>
+
+  </body>
+</html>
