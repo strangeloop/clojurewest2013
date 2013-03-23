@@ -1,0 +1,787 @@
+<!--
+Google IO 2012 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahe <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ClojureWest 2013</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="all" href="theme/css/app.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+<!-- <slide class="logoslide nobackground"> -->
+<!--   <article class="flexbox vcenter"> -->
+<!--     <span><img src="images/google_developers_logo.png"></span> -->
+<!--   </article> -->
+<!-- </slide> -->
+
+<slide class="fill nobackground" style="background-image: url(images/screen-slideshow-BirdseyeSimple.jpg);">
+</slide>
+
+<slide class="title-slide segue nobackground">
+  <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+  <!-- <aside class="gdbar"><img src="images/Github-BirdsEyeAvatar2-transp.png"></aside> -->
+  <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+  <hgroup class="auto-fadein">
+    <h1 data-config-title><!-- populated from slide_config.json --></h1>
+    <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+    <p data-config-presenter><!-- populated from slide_config.json --></p>
+  </hgroup>
+</slide>
+
+
+<slide  >
+  
+    <hgroup>
+      <h2>Common pains when porting to Clojurescript</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>
+<p>Host differences (Classes, Regexp, Functions)</p>
+</li>
+<li>
+<p>Small differences between Clojure and Clojurescript APIs
+<br><br>e.g.&nbsp; <code>-invoke</code> vs <code>invoke</code></p>
+</li>
+<li>
+<p>The ns hell
+<br><br>e.g.&nbsp; <code>:require</code> vs <code>:require-macro</code></p>
+</li>
+<li>
+<p>Among others...</p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Agenda</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Things we'll cover:</p>
+<ul class="build">
+<li>
+<p>Port Clojure &#x2192; Clojurescript effectively and without pain</p>
+</li>
+<li>
+<p>Test your librares in both languages using the same test suite</p>
+</li>
+<li>
+<p>Get fast feedback in development process</p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="segue nobackground dark" >
+  
+    <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Simple Clojure &#x2192; Clojurescript</h2>
+      <h3>Introducing lein-dalap</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>lein-dalap provides</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>
+<p>Inspired by <a href="https://github.com/lynaghk/cljx">cljx</a> (kudos to Kevin Lynagh)</p>
+</li>
+<li>
+<p>Clojure files as input, Clojurescript files as output</p>
+</li>
+<li>
+<p>Use Clojure meta tags to adapt/transform forms to Clojurescript</p>
+</li>
+<li>
+<p>Provide transformation rules <em>a la css</em> using the <a href="http://github.com/BirdseyeSoftware/dalap">dalap</a>
+<br><br>instead of <a href="https://github.com/jonase/kibit">kibit</a></p>
+</li>
+</ul>
+<aside class="note">
+
+- dalap single traversal with custom tree modification at any level of the tree
+- kibit uses backtracking to accomplish this
+- You may both, kibit on your dalap transformation functions
+
+</aside>
+
+<!---
+
+title: Installing lein-dalap
+subtitle: <code>project.clj</code> changes
+
+<pre class="prettyprint lang-clj" data-lang="project.clj">
+(defproject awesome-library
+  ;; ..
+  <b>:plugins [[lein-cljsbuild "0.2.9"]
+           [com.birdseye-sw/lein-dalap "0.1.0"]]
+
+  <br/>
+  :hooks [leiningen.dalap]</b>
+  ;; ..
+  )
+
+</pre>
+--></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Get your rules handled</h2>
+      <h3>Add <code>dalap_rules.clj</code></h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="project/dalap_rules.clj">
+  {
+   ;; input clojure file -> output clojurescript file
+   <b>["src/clj/awesome_library/core.clj" "src/cljs/awesome_library/core.cljs"]</b>
+   [ #_(Opt. additional transformation rules go here) ]
+
+  }
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Make forms Clojure only</h2>
+      <h3>The :clj meta tag</h3>
+    </hgroup>
+    <article ><p>Excludes Clojure forms from code transformation.</p>
+<pre class="prettyprint lang-clj" data-lang="CLOJURE INPUT">
+(deftest upper-case-test
+  (is (= (upper-case "hello world") "HELLO WORLD")))
+
+<b>^:clj</b>
+(deftest java-io-test
+  (assert (instance? File (file "/fixture/one.txt"))))
+</pre>
+
+<pre class="prettyprint lang-clj" data-lang="CLOJURESCRIPT OUTPUT">
+(deftest upper-case-test
+  (is (= (upper-case "hello world") "HELLO WORLD")))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Make forms Clojurescript only</h2>
+      <h3>Ignore reader macro with :cljs at the start</h3>
+    </hgroup>
+    <article ><p>Add Clojurescript, without breaking your Clojure code.</p>
+<pre class="prettyprint lang-clj" data-lang="CLOJURE INPUT">
+(ns clout.test.core
+  ^:clj (:require [ring.mock.request :refer [request]])
+  <b>#_(:cljs</b> (:require [goog.Uri :as uri]))<b>)</b>
+
+#_(<b>:cljs-do</b>
+  (defn request [method uri]
+       {:uri (.getPath (goog.Uri. uri))
+        :request-method method})
+  (defn other-fn []
+     ;...
+  ))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Make forms Clojurescript only</h2>
+      <h3>Ignore reader macro with :cljs at the start</h3>
+    </hgroup>
+    <article ><p>Add Clojurescript, without breaking your Clojure code.</p>
+<pre class="prettyprint lang-clj" data-lang="CLOJURESCRIPT OUTPUT">
+(ns clout.test.core
+  (:require [goog.Uri :as uri]))
+
+<b>(do
+  (defn request [method uri]
+       {:uri (.getPath (goog.Uri. uri))
+        :request-method method})
+  (defn other-fn []
+       ;...
+  ))</b>
+
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Handling differences in <code>ns</code> macro</h2>
+      <h3>meta tags FTW</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="CLOJURE INPUT">
+(ns monads.test.core-test
+  (:require [monads.core :as m]
+            <b>#_(:cljs</b> [monads.core writer-transformer state-transformer])<b>)</b>
+  <b>^:cljs-macro</b> (:require [monads.macros :as monadic])
+  <b>^:clj</b> (:import [monads.core writer-transformer state-transformer]))
+</pre>
+
+<pre class="prettyprint lang-clj" data-lang="CLOJURESCRIPT OUTPUT">
+(ns monads.test.core-test
+  (:require [monads.core :as m]
+            [monads.core writer-transformer state-transformer])
+  (:require-macros [monads.macros :as monadic]))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Replace forms via meta tags</h2>
+      <h3>:cljs meta tag</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="CLOJURE INPUT">
+<b>^{:cljs</b>
+  '(ns monads.test.core-test
+     (:require [monads.core :as m]
+               [monads.core writer-transformer state-transformer])
+     (:require-macros [monads.macros :as monadic]))<b>}</b>
+(ns monads.test.core-test
+  (:require [monads.core :as m]
+            [monads.macros :as monadic])
+  (:import [monads.core writer-transformer state-transformer])
+</pre>
+
+<pre class="prettyprint lang-clj" data-lang="CLOJURESCRIPT OUTPUT">
+(ns monads.test.core-test
+  (:require [monads.core :as m]
+            [monads.core writer-transformer state-transformer])
+  (:require-macros [monads.macros :as monadic]))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Transform your code via selectors (a la CSS)</h2>
+      <h3>Selectors work in a per file basis.</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="project/dalap_rules.clj">
+  {
+   ;; Key a mapping from a Clojure file to a Clojurescript file
+   ["src/clj/awesome_library/core.clj" "src/cljs/awesome_library/core.cljs"]
+
+   [
+    ;; Some rules that lein-dalap provides by default
+    <b>(dalap/when (dalap/has-meta? :cljs))
+    (dalap/transform (dalap/replace-with-meta :cljs))</b>
+
+    ;; etc ..
+   ]
+   ;; .. Other files to transform
+  }
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Transform your code via selectors (a la CSS)</h2>
+      <h3>Selectors work in a per file basis.</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="project/dalap_rules.clj">
+  {
+   ;; Key a mapping from a Clojure file to a Clojurescript file
+   ["src/clj/awesome_library/core.clj" "src/cljs/awesome_library/core.cljs"]
+
+   [
+    ;; pairs
+    <b>'java.lang.String 'string
+    'deref '-deref</b>
+
+    ;; etc ..
+   ]
+   ;; .. Other files to transform
+  }
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Default transformation rules.</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul class="build">
+<li>
+<p>All tags shown so far are implemented using code selectors.
+<br><br>e.g &nbsp; <code>:clj, :cljs, :cljs-macro</code></p>
+</li>
+<li>
+<p>Fully qualified Java types are transformed to their JS equivalent.
+<br><br>e.g &nbsp; <code>java.lang.String</code> will be mapped to JS' <code>string</code></p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>API is extensible</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul class="build">
+<li>
+<p>Add your own tags for code transformation.</p>
+</li>
+<li>
+<p>Add new selection rules by exploring the CLJ form tree.</p>
+</li>
+<li>
+<p>Specify code transformations in a granular level through <br><code>project/dalap_rules.clj</code>.</p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="segue nobackground dark" >
+  
+    <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Same testsuite, many platforms.</h2>
+      <h3>Introducing buster-cljs</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>How can we test Clojurescript?</h2>
+      <h3>Reuse options available in JS</h3>
+    </hgroup>
+    <article ><p>Started by checking the usual suspects</p>
+<ul>
+<li>Jasmine</li>
+<li>Mocha</li>
+<li>Qunit</li>
+<li><b>busterjs</b></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>buster-cljs provides:</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>
+<p>Compatible clojuresque API for both Clojure and Clojurescript</p>
+</li>
+<li>
+<p>Not a new Clojure test library, just wraps clojure.test behind the curtains</p>
+</li>
+<li>
+<p>Parallel test execution in multiple envs (e.g nodejs, browser, JVM)<br><br> using busterjs</p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Installing buster-cljs</h2>
+      <h3><code>project.clj</code> changes</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="project.clj">
+(defproject awesome-library
+  ;; ..
+  <b>:dependencies [ ;; other dependencies
+                     [com.birdseye-sw/buster-cljs "0.1.0"]]</b>
+  ;; ..
+  )
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Example of busterjs syntax</h2>
+      <h3>BDD style</h3>
+    </hgroup>
+    <article ><pre class="prettyprint" data-lang="JAVASCRIPT">
+buster.describe("Adding numbers", function() {
+  buster.describe("natural numbers", function() {
+    buster.it("adds correctly two numbers", function(){
+      buster.assert((2 + 2) === 4);
+    });
+  });
+  buster.describe("floating numbers", function() {
+    // ...
+  });
+});
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Adapting clojure.test to busterjs syntax</h2>
+      <h3>Same semantics</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="CLOJURE">
+(deftest adding-numbers
+  (testing "natural numbers"
+    (testing "adds correctly two numbers"
+      (is (= (+ 2 2) 4)))
+   (testing "floating numbers"
+     ;; ..
+     )))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>1:1 clojure.test <=> busterjs</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><table>
+ <thead>
+  <tr>
+   <th>clojure.test</th>
+   <th>busterjs</th>
+  </tr>
+ </thead>
+ <tbody>
+   <tr>
+     <td><code>deftest<code></td>
+     <td><code>buster.describe</code></td>
+   </tr>
+   <tr>
+     <td><code>testing</code></td>
+     <td><code>buster.describe</code></td>
+   </tr>
+   <tr>
+     <td><code>testing</code></td>
+     <td><code>buster.it</code></td>
+   </tr>
+   <tr>
+     <td><code>is</code></td>
+     <td><code>buster.assert</code></td>
+   </tr>
+ </tbody>
+</table></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>busterjs + clojure.test</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="CLOJURE">
+(<b>deftest</b> adding-numbers
+  (<b>describe</b> "natural numbers"
+    (<b>it</b> "adds correctly two numbers"
+      (<b>is</b> (= (+ 2 2) 4)))
+   (describe "floating numbers"
+     ;; ..
+     )))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Example</h2>
+      <h3>Works both in Clojure and Clojurescript</h3>
+    </hgroup>
+    <article ><pre class="prettyprint lang-clj" data-lang="CLOJURE">
+(ns awesome-library.test.core-test
+  #_(:cljs (:require-macros [buster-cljs.macros :refer
+                               [initialize-buster deftest describe it is]]))
+  ^:clj (:require [buster-cljs.clojure :refer [deftest describe it is]]))
+
+#_(:cljs-do (initialize-buster))
+
+(deftest adding-numbers
+  (<b>describe</b> "natural numbers"
+    (<b>it</b> "adds correctly two numbers"
+      (is (= (+ 2 2) 4)))
+   (describe "floating numbers"
+     ;; ..
+     )))
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Example - protocol-monads library</h2>
+      <h3>JVM execution (clojure.test)</h3>
+    </hgroup>
+    <article ><pre data-lang="BASH">
+<b>$ lein test</b>
+
+lein test monads.test.core
+
+Ran 72 tests containing 139 assertions.
+0 failures, 0 errors.
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Example - protocol-monads library</h2>
+      <h3>nodejs and browsers (busterjs)</h3>
+    </hgroup>
+    <article ><article class="smaller">
+<pre data-lang="BASH">
+# $ npm install
+# $ lein cljsbuild once
+
+<b>$ ./node_modules/buster/bin/buster-test -e browser</b>
+PhantomJS 1.8.2, Linux:        .................................................
+Safari 6.0.2, Mac OS X 10.7.5: .................................................
+Firefox 19.0, Mac OS X 10.7:   .................................................
+426 test cases, 432 tests, 774 assertions, 0 failures, 0 errors, 0 timeouts
+
+<b>$ ./node_modules/buster/bin/buster-test -e node -r quiet</b>
+71 test cases, 72 tests, 129 assertions, 0 failures, 0 errors, 0 timeouts
+</pre>
+</article></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2></h2>
+      <h3></h3>
+    </hgroup>
+    <article ><article>
+<iframe data-src="vendor/busterstatic/buster.html" src="vendor/busterstatic/buster.html"></iframe>
+</article></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Continuous testing with TravisCI</h2>
+      <h3>JVM, node and headless browser</h3>
+    </hgroup>
+    <article ><article class="smaller">
+<pre class="prettyprint lang-yaml" data-lang=".travis.yml">
+language:
+  - node_js
+  - clojure
+lein: lein2
+jdk:
+  - oraclejdk7
+node_js:
+  - "0.8"
+before_script:
+  - "export DISPLAY=:99:0"
+  <b>- "lein2 cljsbuild once"
+  - "./node_modules/buster/bin/buster-server &"
+  - "sleep 3"
+  - "phantomjs ./node_modules/buster/script/phantom.js &"
+  - "sleep 3"</b>
+script:
+  <b>- lein2 test && npm test</b>
+</pre>
+</article></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2></h2>
+      <h3></h3>
+    </hgroup>
+    <article ><article>
+<iframe data-src="vendor/travisci/travisci.html" src="vendor/travisci/travisci.html"></iframe>
+</article></article>
+ 
+</slide>
+
+<slide class="segue nobackground dark" >
+  
+    <aside class="gdbar"><img src="images/google_developers_icon_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Fast feedback loop</h2>
+      <h3>Making Emacs + nrepl work for you (demo)</h3>
+    </hgroup>
+  
+</slide>
+
+<slide class="image" >
+  
+    <hgroup>
+      <h2>Development environment</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><img alt="Development Environment Diagram" src="images/emacs_clojure_development.jpg" /></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Make your library usable in the front-end</h2>
+      <h3>Some projects that made the jump</h3>
+    </hgroup>
+    <article ><p>Third Party</p>
+<ul>
+<li>
+<p><a href="http://github.com/jduey/protocol-monads">protocol-monads</a></p>
+</li>
+<li>
+<p><a href="http://github.com//clout">clout</a></p>
+</li>
+</ul>
+<p>Internal Projects</p>
+<ul>
+<li>
+<p><a href="http://github.com/BirdseyeSoftware/dalap">dalap</a></p>
+</li>
+<li>
+<p><a href="http://github.com/BirdseyeSoftware/dalap-html">dalap-html</a></p>
+</li>
+</ul>
+<p>Your awesome library/project?</p>
+<aside class="note">
+
+- Helped finding bugs on Clojurescript in the translation process
+
+</aside></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>What to do?</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>
+<p>Old library: if it makes sense, make it front-end usable</p>
+</li>
+<li>
+<p>New library: Consider Clojurescript in your library from the <a href="">very start</a></p>
+</li>
+<li>
+<p>Make Clojurescript more awesome!</p>
+</li>
+</ul>
+<!---
+title: Why busterjs?
+build_lists: true
+
+Testing API had to be good, but it wasn't the most important point.
+
+<b>Main Feature</b>: execute test suites in multiple browsers, in
+parallel
+
+1. 1) Slave your many vendored browsers (phantomJS for headless testing)
+
+2. 2) Push your testsuite to each of them in parallel
+
+3. 3) Get results back in the terminal
+--></article>
+ 
+</slide>
+
+
+<slide class="thank-you-slide segue nobackground">
+  <aside class="gdbar right"><img src="images/google_developers_icon_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h2>&lt;Thank You!&gt;</h2>
+  </article>
+  <p class="auto-fadein" data-config-contact>
+    <!-- populated from slide_config.json -->
+    <br>
+    <a href="http://twitter.com/birdseye_sw">@birdseye_sw</a><br>
+    <a href="http://twitter.com/romanandreg">@romanandreg</a><br>
+    <a href="http://twitter.com/tavisrudd">@tavisrudd</a><br>
+    <br>
+    <a href="http://birdseye-sw.com">http://birdseye-sw.com</a>
+  </p>
+</slide>
+
+<!-- <slide class="logoslide dark nobackground"> -->
+<!--   <article class="flexbox vcenter"> -->
+<!--     <span><img src="images/google_developers_logo_white.png"></span> -->
+<!--   </article> -->
+<!-- </slide> -->
+
+<slide class="backdrop"></slide>
+
+</slides>
+
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
