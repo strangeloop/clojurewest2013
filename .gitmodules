@@ -1,0 +1,3 @@
+[submodule "slides/sessions/Martin-ClojureScript-in-ClojureScript"]
+	path = slides/sessions/Martin-ClojureScript-in-ClojureScript
+	url = https://github.com/kanaka/cljs-in-cljs-presentation.git
