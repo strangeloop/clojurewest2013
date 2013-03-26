@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>forma</title>
+
+		<meta name="description" content="Forest Monitoring">
+		<meta name="author" content="Dan Hammer">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.min.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<div class="slides">
+
+				<section>
+					<h1>FORMA</h1>
+					<h3>Forest Monitoring in Clojure</h3>
+					<p>
+						<small>Dan Hammer // <a href="http://twitter.com/econohammer">@econohammer</a></small>
+					</p>
+				</section>
+
+            <!-- collect the characteristics by ecoregion to compare them -->
+
+				<section>
+
+				  <section>
+					 <h2>Deforestation accounts for 12% of annual greenhouse gas emissions</h2>
+				  </section>
+
+				  <section data-state="alert">
+					 <h2>Deforestation is accelerating</h2>
+                <img width="1000" height="400" src="images/total-defor.png" alt="rate">
+				  </section>
+
+				  <section data-state="alert">
+					 <h2>... and dispersing</h2>
+                <img width="1000" height="400" src="images/entropy.png" alt="entropy">
+				  </section>
+
+				  <section>
+					 <h2>Any viable effort to curb deforestation rates will rely on open information</h2>
+				  </section>
+
+				</section>
+
+            <!-- Global forest watch website -->
+            <section>
+
+				  <section>
+                <img width="900" height="650" src="http://i.imgur.com/u6TJA.png" alt="gfw">
+				  </section>
+
+              <section>
+                <h1>Everything</h1>
+                <h3 style="color:#33CCFF">from raw data to analysis to mapping to website</h3>
+                <h1>is open source</h1>
+              </section>
+
+            </section>                 
+
+            <!-- Show that the partition framework to analyze the
+            spectral time series is well-suited to Clojure -->
+            <section>
+
+              <section>
+                <h2>Map across partitions</h2>
+                <h2 style="color:#33CCFF">of a one-dimensional array</h2>
+              </section>
+
+              <section>
+                <img width="1000" height="650" src="images/ndvi.png" alt="ndvi">
+              </section>
+
+              <section>
+                <img width="1000" height="650" src="images/ndvi-breaks.png" alt="ndvi-break">
+              </section>                                  
+
+              <section>
+                <img width="1000" height="650" src="images/ndvi-breaks2.png" alt="ndvi-break-2">
+              </section>                                  
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(require '[incanter.core :as i])
+
+(defn trend-mat
+  [T]
+  (i/bind-columns (repeat T 1) (range T)))
+
+(defn pseudoinverse
+  [x]
+  (let [xt (i/trans x)]
+    (i/mmult (i/solve (i/mmult xt x)) xt)))
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn grab-trend
+  [pseudo-mat sub-ts]
+    (second (i/mmult pseudo-mat sub-ts)))
+
+(defn windowed-trend
+  [block-len full-ts]
+  (let [pseudo-mat (-> block-len trend-mat pseudoinverse)]
+    (map (partial grab-trend pseudo-mat)
+         (partition block-len 1 full-ts))))
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn short-stat
+  [block-param ts]
+  (->> (windowed-trend block-param ts)
+       (reduce min)))
+
+
+(facts
+  (count ndvi) => 199
+  (short-stat 24 ndvi) => -63.3346)
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>                 
+                <h2>Same framework is extensible to more complex operations on 1D arrays</h2>
+                <h3 style="color:#33CCFF">for applications in information theory</h3>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn- ordinal-idx
+  [sub-ts]
+  (let [indexed-vector (map-indexed vector sub-ts)]
+    (map first
+         (sort-by second indexed-vector))))
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn permutation-count
+  [D ts]
+  (let [subs (partition D 1 ts)]
+    (frequencies (map ordinal-idx subs))))
+
+(fact
+  (permutation-count 3 [ 8 7 8 9 9 8 5 7 6 5 ])
+    => \{ (1 0 2) 1
+          (0 1 2) 2
+          (2 0 1) 1
+          (2 1 0) 2
+          (1 2 0) 1
+          (0 2 1) 1 \})
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+
+            </section>
+
+
+            <!-- partition a 2d away -->
+            <section>
+
+              <section>
+                <h2>Map across partitions</h2>
+                <h2 style="color:#33CCFF">of a two-dimensional array</h2>
+              </section>
+
+              <section>
+                <img width="650" height="650" src="images/raster1.png" alt="raster">
+              </section>
+
+              <section>
+                <img width="650" height="650" src="images/raster2.png" alt="raster">
+              </section>
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn walk-matrix
+  [m window]
+  (mapcat (comp (partial apply map vector)
+                (partial map (partial partition window 1)))
+          (partition window 1 m)))
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+      (def mat
+        [[ 0    0    0    0    0    0    0    1    1    1 ]
+         [ 0    0    0    1    0    0    0    0    0    1 ]
+         [ 0    0    0    0    0    0    0    0    0    0 ]
+         [ 0    0    0    0    0    0    0    0    0    0 ]
+         [ 0    0    0    0    0    0    0    0    0    0 ]
+         [ 0    0    0    0    0    0    0    1    1    0 ]
+         [ 0    0    0    0    0    0    0    1    1    0 ]
+         [ 1    0    0    0    0    0    0    1    0    0 ]
+         [ 0    1    0    0    0    0    0    0    0    0 ]
+         [ 1    1    0    0    0    0    0    0    0    0 ]])
+
+(defn window-sum
+  [sub-mat]
+  (reduce + (flatten sub-mat)))
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(fact 
+  (map window-sum
+       (walk-matrix mat 3))
+
+    => [ 0 1 1 1 0 1 2 4
+         0 1 1 1 0 0 0 1
+         0 0 0 0 0 0 0 0
+         0 0 0 0 0 1 2 2
+         0 0 0 0 0 2 4 4
+         1 0 0 0 0 3 5 5
+         2 1 0 0 0 2 3 3
+         4 2 0 0 0 1 1 1 ])
+			           </pre>
+		            </code>
+	             </p>
+              </section>                 
+
+              <section>
+                <img width="650" height="650" src="images/spatial-raw.png" alt="raster">
+              </section>
+
+              <section>
+                <img width="650" height="650" src="images/spatial-smooth.png" alt="raster">
+              </section>
+
+            </section>
+
+            <section>
+              <section>
+                <h2>Map across partitions</h2>
+                <h2 style="color:#33CCFF">of a three-dimensional array</h2>
+              </section>
+              <section>
+                <img width="650" height="650" src="images/cube.png" alt="cube">
+              </section>
+            </section>
+
+            <section>
+              <section>
+                <h2>Map across partitions</h2>
+                <h2 style="color:#33CCFF">of an n-dimensional array</h2>
+              </section>
+              <section>
+                <img width="650" height="650" src="images/joke.png" alt="joke">
+              </section>
+              <section>
+                <h2>I guess it's possible...</h2>
+              </section>
+            </section>
+
+            <section>
+
+              <!-- <section> -->
+                <h2  style="color:#33CCFF">Estimation</h2>
+                <ol>
+                  <li class="fragment"> Collect training data into a single vector, where each element \( z_i \) indicates the event of deforestation in pixel \( i \) </li>
+                  <br></br>
+                  <li class="fragment"> Collect all characteristics of the time series spanning the training period for each pixel \( i \) in \( {\bf v}_{i} \). </li>
+                  <br></br>
+                  <li class="fragment"> Estimate \( \beta \) according to the logistic model:
+                    <br></br>
+                    <p>\[ \mathbb{P}(z_{it} \hspace{2pt} | \hspace{2pt} {\bf v}_{it}; \beta) = \frac{e^{\beta{\bf v}_{it}}}{1 + e^{\beta{\bf v}_{it}}} \] </p>
+                  </li>
+                </ol>
+
+ <!--              </section> -->
+
+<!--               <section> -->
+<!--                 Estimation requires attributes for all pixels within a certain geographic area, defined by ecoregions -->
+<!-- 	             <p align="left"> -->
+<!-- 		            <code class="clojure"> -->
+<!-- 			           <pre> -->
+<!-- (defn beta-vector  -->
+<!--   [label-row feature-mat] -->
+<!--   (let [beta-init (repeat 0 (i/ncol feature-mat))] -->
+<!--     (loop [beta beta-init -->
+<!--            beta-diff 100] -->
+<!--       (if (< beta-diff 1e-8) -->
+<!--         (vec (.toArray beta)) -->
+<!--         (let [update (beta-update beta label-row feature-mat) -->
+<!--               beta-new (.addRowVector beta update) -->
+<!--               diff (.distance2 beta beta-new)] -->
+<!--           (recur -->
+<!--            beta-new -->
+<!--            diff)))))) -->
+<!-- 			           </pre> -->
+<!-- 		            </code> -->
+<!-- 	             </p> -->
+<!--               </section>                  -->
+ 
+            </section>
+
+            <section>
+
+              <section>
+                <h1>Using Cascalog</h1>
+                <h3 style="color:#33CCFF">to collect time series attributes and classify pixels</h3>
+                <h1>solved our problems</h1>                
+              </section>
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(use 'cascalog.api)
+
+(defn beta-gen
+  "query to return the beta vector associated with each ecoregion"
+  [label-src timeseries-src]
+  (<- [?eco ?beta]
+      (label-src ?pixel-id ?label)
+      (timeseries-src ?pixel-id ?eco ?ndvi)
+      (create-features ?ndvi :> ?feature-vec)
+      (estimate-beta ?label ?feature-vec :> ?beta)))
+			           </pre>
+		            </code>
+	             </p>
+              </section>
+
+              <section>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(defn prob-gen
+  [label-src timeseries-src]
+  (let [beta-src (beta-gen label-src timeseries-src)]
+    (<- [?pixel-id ?prob]
+        (beta-src ?eco ?beta)
+        (timeseries-src ?pixel-id ?eco ?ndvi)
+        (create-features ?ndvi :> ?feature-vec)
+        (apply-beta ?feature-vec ?beta :> ?prob))))
+
+(fact
+  (prob-gen labels timeseries) => (produces [[10029102 0.56]
+                                             [12323943 0.24]]))
+			           </pre>
+		            </code>
+	             </p>
+              </section>
+
+            </section>
+
+            <section>
+              <section>
+                <h2>Loading the data into CartoDB</h2>
+                <h2  style="color:#33CCFF">using cartodb-clj</h2>
+	             <p align="left">
+		            <code class="clojure">
+			           <pre>
+(use '[cartodb.playground :only (insert-rows)])
+
+(let [table-name "gfw"
+      account-name "wri"]
+  (apply insert-rows account-name creds table-name data))
+			           </pre>
+		            </code>
+	             </p>
+              </section>
+
+              <section>
+                <iframe src="https://wri-01.cartodb.com/tables/208/" name="gfw-table" scrolling="no" width="1500" height="1000"> cartodb creds required </iframe>
+              </section>
+
+              <section>
+                <iframe src="http://gfw-staging.herokuapp.com/" name="GFW" scrolling="no" width="1500" height="1000"> GFW site requires password until public release </iframe>
+              </section>
+            </section>
+
+				<section>
+					<h3>Thanks!</h3>
+					<p> github.com/danhammer/forma-js </p>
+				</section>
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+         Reveal.addEventListener("ready", winMatrix);
+         Reveal.addEventListener("ready", gameGraph);
+         Reveal.addEventListener( 'slidechanged', function( event ) {
+         MathJax.Hub.Rerender(event.currentSlide);
+         } );
+
+		</script>
+
+	</body>
+   <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</html>
+
+
