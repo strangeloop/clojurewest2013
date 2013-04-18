@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>clp-intro</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="title" content="clp-intro"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-04-17 22:35:49 CDT"/>
+<meta name="author" content="Ryan Senior"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+
+<link rel="stylesheet" type="text/css" href="common.css" />
+<link rel="stylesheet" type="text/css" href="screen.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="projection.css" media="projection" />
+<link rel="stylesheet" type="text/css" href="presenter.css" media="presenter" />
+
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">clp-intro</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Intro to CLP with core.logic</a></li>
+<li><a href="#sec-2">2 Strange Loop 2013</a></li>
+<li><a href="#sec-3">3 Background</a>
+<ul>
+<li><a href="#sec-3-1">3.1 Why Constraint Logic Programming</a></li>
+<li><a href="#sec-3-2">3.2 Traditional LP</a></li>
+<li><a href="#sec-3-3">3.3 Traditional LP</a></li>
+<li><a href="#sec-3-4">3.4 Traditional LP</a></li>
+<li><a href="#sec-3-5">3.5 Reasoned Schemer Numbers</a></li>
+<li><a href="#sec-3-6">3.6 Fibonacci Example 1</a></li>
+<li><a href="#sec-3-7">3.7 Constraint Logic Programming</a></li>
+<li><a href="#sec-3-8">3.8 CLP in core.logic</a></li>
+<li><a href="#sec-3-9">3.9 CLP(FD) in core.logic</a></li>
+<li><a href="#sec-3-10">3.10 Fibonacci Example 2</a></li>
+<li><a href="#sec-3-11">3.11 Why isn't it faster?</a></li>
+<li><a href="#sec-3-12">3.12 Rectangle Problem</a></li>
+<li><a href="#sec-3-13">3.13 fd/+ up close</a></li>
+<li><a href="#sec-3-14">3.14 Grocery Puzzle</a></li>
+<li><a href="#sec-3-15">3.15 Grocery Puzzle Answer</a></li>
+<li><a href="#sec-3-16">3.16 Arch Friends</a></li>
+<li><a href="#sec-3-17">3.17 Arch Friends Answer</a></li>
+<li><a href="#sec-3-18">3.18 References</a></li>
+<li><a href="#sec-3-19">3.19 Thanks!</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Intro to CLP with core.logic &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-1">
+
+<p>  Ryan Senior
+</p>
+<p>  
+  senior.ryan@gmail.com
+</p>
+<p>  
+  <a href="http://objectcommando.com/blog">http://objectcommando.com/blog</a>
+</p>
+<p>  
+  Twitter: @objcmdo
+</p></div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Strange Loop 2013 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h2>
+<div class="outline-text-2" id="text-2">
+
+<ul>
+<li><a href="http://thestrangeloop.com">http://thestrangeloop.com</a>
+</li>
+<li>September 18-20 in St Louis, MO
+</li>
+<li>Call For Proposals - Early April
+</li>
+<li>Registration opens - Mid May
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Background</h2>
+<div class="outline-text-2" id="text-3">
+
+
+</div>
+
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Why Constraint Logic Programming &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-1">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Traditional LP &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-2">
+
+<p>   Involves only the equality constraint
+</p>
+
+
+<pre class="src src-clojure"><span style="color: #7f7f7f;">(</span>run* [q]
+  <span style="color: #7f7f7f;">(</span><span style="color: #dbdb95;">==</span> q 1<span style="color: #7f7f7f;">))</span>
+<span style="color: #74af68;">;</span><span style="color: #74af68;">=&gt; (1)</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Traditional LP &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-3">
+
+<ul>
+<li>"Objects manipulated by a logic program are uninterpreted structures"
+</li>
+<li>"Equality only holds between those objects that are syntactically
+     identical"
+</li>
+<li>"Every semantic object has to be explicitly coded into a term"
+</li>
+</ul>
+
+
+<p>
+   <span style="text-decoration:underline;">Constraint Logic Programming - An Informal Introduction</span>
+   by Thom Fruhwirth et al.
+</p></div>
+
+</div>
+
+<div id="outline-container-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Traditional LP &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-4">
+
+<p>   That's no integer!
+</p>
+
+
+<pre class="src src-clojure"><span style="color: #7f7f7f;">(</span>run* [q]
+  <span style="color: #7f7f7f;">(</span>fresh [x]
+    <span style="color: #7f7f7f;">(</span><span style="color: #dbdb95;">==</span> x 1<span style="color: #7f7f7f;">)</span>
+    <span style="color: #7f7f7f;">(</span><span style="color: #dbdb95;">==</span> q <span style="color: #7f7f7f;">(</span><span style="color: #dbdb95;">inc</span> x<span style="color: #7f7f7f;">))))</span>
+<span style="color: #74af68;">;</span><span style="color: #74af68;">=&gt; fail</span>
+</pre>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> Reasoned Schemer Numbers &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-5">
+
+<ul>
+<li>When you only have ==, you make the numbers fit in your world
+</li>
+<li>Each number is a list of bits
+</li>
+<li>zero is ()
+</li>
+<li>(1 0 1 1) = 11
+</li>
+<li>(1 1 1 1) = 15       
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-6" class="outline-3">
+<h3 id="sec-3-6"><span class="section-number-3">3.6</span> Fibonacci Example 1 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-6">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-7" class="outline-3">
+<h3 id="sec-3-7"><span class="section-number-3">3.7</span> Constraint Logic Programming</h3>
+<div class="outline-text-3" id="text-3-7">
+
+<ul>
+<li>"Constraints on the other hand are used to implicitly describe
+     the relationship between such semantic objects"
+</li>
+</ul>
+
+<p>   <span style="text-decoration:underline;">Constraint Logic Programming - An Informal Introduction</span>
+   by Thom Fruhwirth et al.
+</p></div>
+
+</div>
+
+<div id="outline-container-3-8" class="outline-3">
+<h3 id="sec-3-8"><span class="section-number-3">3.8</span> CLP in core.logic &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-8">
+
+<ul>
+<li>Logic variables have some baggage
+</li>
+<li>Implicit relationships based on domain
+</li>
+<li>Swap unification for constraint satisfaction  
+</li>
+<li>Some problems can be solved more efficiently
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-9" class="outline-3">
+<h3 id="sec-3-9"><span class="section-number-3">3.9</span> CLP(FD) in core.logic &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-9">
+
+<ul>
+<li>Declare your domain with <code>fd/in</code> and <code>fd/interval</code>
+</li>
+<li>Comparisons: <code>fd/&lt;=</code>, <code>fd/&lt;</code>, <code>fd/&gt;=</code>, <code>fd/&gt;</code>, <code>fd/==</code>, <code>fd/!=</code>
+</li>
+<li>Arithmetic: <code>fd/+</code>, <code>fd/-</code>, <code>fd/*</code>, <code>fd/quot</code>
+</li>
+<li>Also useful: <code>fd/distinct</code>
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-10" class="outline-3">
+<h3 id="sec-3-10"><span class="section-number-3">3.10</span> Fibonacci Example 2 &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-10">
+
+</div>
+
+</div>
+
+<div id="outline-container-3-11" class="outline-3">
+<h3 id="sec-3-11"><span class="section-number-3">3.11</span> Why isn't it faster?</h3>
+<div class="outline-text-3" id="text-3-11">
+
+<ul>
+<li>Generate and test is inevitable and slow
+</li>
+<li>Reduce the number of possible values through constraints
+</li>
+<li>All of the fd operations <b>can</b> reduce the search space
+</li>
+<li>Guess and check on fewer numbers
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-12" class="outline-3">
+<h3 id="sec-3-12"><span class="section-number-3">3.12</span> Rectangle Problem &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-12">
+
+<p>   Given a perimeter of 110 and an area of 646, find the length of
+   each side of the rectangle
+</p>
+<p>
+   <img src="./rectangle-problem.png" alt="rectangle problem image" title="Rectangle Problem" />
+</p></div>
+
+</div>
+
+<div id="outline-container-3-13" class="outline-3">
+<h3 id="sec-3-13"><span class="section-number-3">3.13</span> fd/+ up close &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-13">
+
+<ul>
+<li>w = u + v
+</li>
+<li>u = (fd/interval (clojure.core/- w<sub>min</sub> v<sub>max</sub>) (core/- w<sub>max</sub> v<sub>min</sub>))
+</li>
+<li>v = (fd/interval (clojure.core/- w<sub>min</sub> u<sub>max</sub>) (core/- w<sub>max</sub> u<sub>min</sub>))
+</li>
+<li>w = (fd/interval (clojure.core/+ u<sub>min</sub> v<sub>min</sub>) (core/+ u<sub>max</sub>
+     v<sub>max</sub>))
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-14" class="outline-3">
+<h3 id="sec-3-14"><span class="section-number-3">3.14</span> Grocery Puzzle &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-14">
+
+<p>   A kid goes into a grocery store and buys four items. The cashier
+   charges $7.11, the kid pays and is about to leave when the cashier
+   calls the kid back and says, "Hold on, I multiplied the four items
+   instead of adding them; I'll try again. Hah, when I add them the
+   price still comes to $7.11".
+</p>
+<p>   
+   CTCMP - Peter Van Roy and Seif Haridi
+</p></div>
+
+</div>
+
+<div id="outline-container-3-15" class="outline-3">
+<h3 id="sec-3-15"><span class="section-number-3">3.15</span> Grocery Puzzle Answer &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-15">
+
+<ol>
+<li>$1.20
+</li>
+<li>$1.25
+</li>
+<li>$1.50
+</li>
+<li>$3.16
+</li>
+</ol>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-16" class="outline-3">
+<h3 id="sec-3-16"><span class="section-number-3">3.16</span> Arch Friends &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-16">
+
+<p>   Harriet, upon returning from the mall, is happily describing her
+   four shoe purchases to her friend Aurora. Aurora just loves the
+   four different kinds of shoes that Harriet bought (pink wedges,
+   fuchsia flats, purple pumps, and suede sandals), but Harriet can't
+   recall at which different store (Foot Farm, Heels in a Handcart,
+   The Shoe Palace, or Tootsies) she got each pair. Can you help these
+   two figure out the order in which Harriet bought each pair of
+   shoes, and where she bought each?
+</p>
+<ol>
+<li>Harriet bought fuchsia flats at Heels in a Handcart.
+</li>
+<li>The store she visited just after buying her purple pumps was not Tootsies.
+</li>
+<li>The Foot Farm was Harriet's second stop.
+</li>
+<li>Two stops after leaving The Shoe Palace, Harriet bought her suede
+      sandals.
+</li>
+</ol>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-17" class="outline-3">
+<h3 id="sec-3-17"><span class="section-number-3">3.17</span> Arch Friends Answer &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-17">
+
+<ol>
+<li>Purple Pumps - The Shoe Palace
+</li>
+<li>Pink Wedges - Foot Farm
+</li>
+<li>Suede Sandals - Tootsies
+</li>
+<li>Fuchsia Flats - Heels in a Handcart
+</li>
+</ol>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-18" class="outline-3">
+<h3 id="sec-3-18"><span class="section-number-3">3.18</span> References &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-18">
+
+<ul>
+<li>cKanren - miniKanren with Constraints By Claire E. Alvis et al.
+</li>
+<li>The Reasoned Schemer By Friedman, Byrd and Kiselyov
+</li>
+<li>Concepts, Techniques, and Models of Computer Programming
+     (Chapter 12) -
+     By Peter Van Roy, Seif Haridi
+</li>
+<li>Prolog Programming for Artificial Intelligence 4th Edition
+     (Chapter 7)  By Ivan Bratko
+</li>
+<li>Constraint Logic Programming - An Informal Introduction By Thom
+     Fruhwirth et al.
+</li>
+<li><a href="http://brownbuffalo.sourceforge.net/index.html">http://brownbuffalo.sourceforge.net/index.html</a>
+</li>
+</ul>
+
+</div>
+
+</div>
+
+<div id="outline-container-3-19" class="outline-3">
+<h3 id="sec-3-19"><span class="section-number-3">3.19</span> Thanks! &nbsp;&nbsp;&nbsp;<span class="tag"><span class="slide">slide</span></span></h3>
+<div class="outline-text-3" id="text-3-19">
+
+
+
+
+
+
+<script type="text/javascript" src="org-html-slideshow.js"></script>
+
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2013-04-17 22:35:49 CDT</p>
+<p class="author">Author: Ryan Senior</p>
+<p class="creator">Org version 7.8.11 with Emacs version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

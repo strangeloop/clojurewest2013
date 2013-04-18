@@ -1,0 +1,97 @@
+/* Org-HTML-Slideshow presenter styles.
+ *
+ * These styles will apply only to the presenter preview.
+ */
+
+body.presenter-display {
+   background-color: black;
+}
+
+.presenter-label {
+   color: white;
+   font-family: Helvetica, Arial, sans-serif;
+}
+
+#presenter-current-slide-container {
+   bottom: 200px;
+   height: 40%;
+   left: 1%;
+   overflow: hidden;
+   position: absolute;
+   top: 0;
+   vertical-align: top;
+   width: 50%;
+   zoom: 60%;
+}
+
+#presenter-next-slide-container {
+   height: 30%;
+   overflow: hidden;
+   position: absolute;
+   right: 1%;
+   top: 1%;
+   vertical-align: top;
+   width: 40%;
+   zoom: 50%;
+}
+
+#presenter-current-slide {
+   background: white;
+   height: 100%;
+   padding: 12pt;
+}
+
+#presenter-next-slide {
+   background: white;
+   height: 100%;
+   padding: 12pt;
+}
+
+#presenter-times {
+   bottom: 1%;
+   font-size: 2.5em;
+   position: absolute;
+   text-align: center;
+   height: 12%;
+   width: 98%;
+}
+
+#presenter-elapsed-time-container {
+   position: absolute;
+   left: 1%;
+   width: 45%;
+}
+
+#presenter-clock-time {
+   position: absolute;
+   right: 1%;
+   width: 45%;
+}
+
+#presenter-clock-time-ampm {
+   font-size: 0.5em;
+}
+
+#presenter-elapsed-time-reset-container {
+   font-size: 12pt;
+}
+
+a#presenter-elapsed-time-reset {
+   color: cyan;
+}
+
+#presenter-notes-container {
+   position: absolute;
+   overflow: auto;
+   top: 40%;
+   left: 10px;
+   height: 45%;
+   width: 98%;
+   font-size: 18pt;
+   color: white;
+}
+
+#presenter-notes-container h1,#presenter-notes-container h2,#presenter-notes-container h3,#presenter-notes-container h4,#presenter-notes-container h5,#presenter-notes-container h6,#presenter-notes-container h7,#presenter-notes-container h8 {
+   font-size: 12pt;
+   text-align: left;
+}
